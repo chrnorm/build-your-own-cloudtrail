@@ -4,6 +4,44 @@ package authz.v1;
 
 service AuthzService {
     rpc PreviewPolicy(PreviewPolicyRequest) returns (PreviewPolicyResponse) {}
+
+    rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
+    rpc ListReceipts(ListReceiptsRequest) returns (ListReceiptsResponse) {}
+    rpc ListS3Objects(ListS3ObjectsRequest) returns (ListS3ObjectsResponse) {}
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+    repeated User users = 1;
+}
+
+message ListReceiptsRequest {}
+
+message ListReceiptsResponse {
+    repeated Receipt receipts = 1;
+}
+
+message ListS3ObjectsRequest {}
+
+message ListS3ObjectsResponse {
+    repeated S3Object objects = 1;
+}
+
+
+message User {
+    string id = 1;
+}
+
+message Receipt {
+    string id = 1;
+    string owner = 2;
+    string category = 3;
+}
+
+message S3Object {
+    string id = 1;
+    string owner = 2;
 }
 
 message PreviewPolicyRequest {
@@ -12,6 +50,7 @@ message PreviewPolicyRequest {
 
 message PreviewPolicyResponse {
     repeated Evaluation permission_changes = 1;
+    repeated Test test_results = 2;
 }
 
 message EID {
@@ -23,6 +62,14 @@ message AuthzRequest {
     EID principal = 1;
     EID action = 2;
     EID resource = 3;
+}
+
+message Test {
+    string name = 1;
+    AuthzRequest request = 2;
+    bool pass = 3;
+    Decision want = 4;
+    Decision got = 5;
 }
 
 message Evaluation {

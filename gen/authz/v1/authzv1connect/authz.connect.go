@@ -36,17 +36,31 @@ const (
 	// AuthzServicePreviewPolicyProcedure is the fully-qualified name of the AuthzService's
 	// PreviewPolicy RPC.
 	AuthzServicePreviewPolicyProcedure = "/authz.v1.AuthzService/PreviewPolicy"
+	// AuthzServiceListUsersProcedure is the fully-qualified name of the AuthzService's ListUsers RPC.
+	AuthzServiceListUsersProcedure = "/authz.v1.AuthzService/ListUsers"
+	// AuthzServiceListReceiptsProcedure is the fully-qualified name of the AuthzService's ListReceipts
+	// RPC.
+	AuthzServiceListReceiptsProcedure = "/authz.v1.AuthzService/ListReceipts"
+	// AuthzServiceListS3ObjectsProcedure is the fully-qualified name of the AuthzService's
+	// ListS3Objects RPC.
+	AuthzServiceListS3ObjectsProcedure = "/authz.v1.AuthzService/ListS3Objects"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
 	authzServiceServiceDescriptor             = v1.File_authz_v1_authz_proto.Services().ByName("AuthzService")
 	authzServicePreviewPolicyMethodDescriptor = authzServiceServiceDescriptor.Methods().ByName("PreviewPolicy")
+	authzServiceListUsersMethodDescriptor     = authzServiceServiceDescriptor.Methods().ByName("ListUsers")
+	authzServiceListReceiptsMethodDescriptor  = authzServiceServiceDescriptor.Methods().ByName("ListReceipts")
+	authzServiceListS3ObjectsMethodDescriptor = authzServiceServiceDescriptor.Methods().ByName("ListS3Objects")
 )
 
 // AuthzServiceClient is a client for the authz.v1.AuthzService service.
 type AuthzServiceClient interface {
 	PreviewPolicy(context.Context, *connect.Request[v1.PreviewPolicyRequest]) (*connect.Response[v1.PreviewPolicyResponse], error)
+	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
+	ListReceipts(context.Context, *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error)
+	ListS3Objects(context.Context, *connect.Request[v1.ListS3ObjectsRequest]) (*connect.Response[v1.ListS3ObjectsResponse], error)
 }
 
 // NewAuthzServiceClient constructs a client for the authz.v1.AuthzService service. By default, it
@@ -65,12 +79,33 @@ func NewAuthzServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(authzServicePreviewPolicyMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		listUsers: connect.NewClient[v1.ListUsersRequest, v1.ListUsersResponse](
+			httpClient,
+			baseURL+AuthzServiceListUsersProcedure,
+			connect.WithSchema(authzServiceListUsersMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		listReceipts: connect.NewClient[v1.ListReceiptsRequest, v1.ListReceiptsResponse](
+			httpClient,
+			baseURL+AuthzServiceListReceiptsProcedure,
+			connect.WithSchema(authzServiceListReceiptsMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		listS3Objects: connect.NewClient[v1.ListS3ObjectsRequest, v1.ListS3ObjectsResponse](
+			httpClient,
+			baseURL+AuthzServiceListS3ObjectsProcedure,
+			connect.WithSchema(authzServiceListS3ObjectsMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // authzServiceClient implements AuthzServiceClient.
 type authzServiceClient struct {
 	previewPolicy *connect.Client[v1.PreviewPolicyRequest, v1.PreviewPolicyResponse]
+	listUsers     *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
+	listReceipts  *connect.Client[v1.ListReceiptsRequest, v1.ListReceiptsResponse]
+	listS3Objects *connect.Client[v1.ListS3ObjectsRequest, v1.ListS3ObjectsResponse]
 }
 
 // PreviewPolicy calls authz.v1.AuthzService.PreviewPolicy.
@@ -78,9 +113,27 @@ func (c *authzServiceClient) PreviewPolicy(ctx context.Context, req *connect.Req
 	return c.previewPolicy.CallUnary(ctx, req)
 }
 
+// ListUsers calls authz.v1.AuthzService.ListUsers.
+func (c *authzServiceClient) ListUsers(ctx context.Context, req *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error) {
+	return c.listUsers.CallUnary(ctx, req)
+}
+
+// ListReceipts calls authz.v1.AuthzService.ListReceipts.
+func (c *authzServiceClient) ListReceipts(ctx context.Context, req *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error) {
+	return c.listReceipts.CallUnary(ctx, req)
+}
+
+// ListS3Objects calls authz.v1.AuthzService.ListS3Objects.
+func (c *authzServiceClient) ListS3Objects(ctx context.Context, req *connect.Request[v1.ListS3ObjectsRequest]) (*connect.Response[v1.ListS3ObjectsResponse], error) {
+	return c.listS3Objects.CallUnary(ctx, req)
+}
+
 // AuthzServiceHandler is an implementation of the authz.v1.AuthzService service.
 type AuthzServiceHandler interface {
 	PreviewPolicy(context.Context, *connect.Request[v1.PreviewPolicyRequest]) (*connect.Response[v1.PreviewPolicyResponse], error)
+	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
+	ListReceipts(context.Context, *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error)
+	ListS3Objects(context.Context, *connect.Request[v1.ListS3ObjectsRequest]) (*connect.Response[v1.ListS3ObjectsResponse], error)
 }
 
 // NewAuthzServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -95,10 +148,34 @@ func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(authzServicePreviewPolicyMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	authzServiceListUsersHandler := connect.NewUnaryHandler(
+		AuthzServiceListUsersProcedure,
+		svc.ListUsers,
+		connect.WithSchema(authzServiceListUsersMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServiceListReceiptsHandler := connect.NewUnaryHandler(
+		AuthzServiceListReceiptsProcedure,
+		svc.ListReceipts,
+		connect.WithSchema(authzServiceListReceiptsMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServiceListS3ObjectsHandler := connect.NewUnaryHandler(
+		AuthzServiceListS3ObjectsProcedure,
+		svc.ListS3Objects,
+		connect.WithSchema(authzServiceListS3ObjectsMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/authz.v1.AuthzService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthzServicePreviewPolicyProcedure:
 			authzServicePreviewPolicyHandler.ServeHTTP(w, r)
+		case AuthzServiceListUsersProcedure:
+			authzServiceListUsersHandler.ServeHTTP(w, r)
+		case AuthzServiceListReceiptsProcedure:
+			authzServiceListReceiptsHandler.ServeHTTP(w, r)
+		case AuthzServiceListS3ObjectsProcedure:
+			authzServiceListS3ObjectsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -110,4 +187,16 @@ type UnimplementedAuthzServiceHandler struct{}
 
 func (UnimplementedAuthzServiceHandler) PreviewPolicy(context.Context, *connect.Request[v1.PreviewPolicyRequest]) (*connect.Response[v1.PreviewPolicyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.PreviewPolicy is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.ListUsers is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) ListReceipts(context.Context, *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.ListReceipts is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) ListS3Objects(context.Context, *connect.Request[v1.ListS3ObjectsRequest]) (*connect.Response[v1.ListS3ObjectsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.ListS3Objects is not implemented"))
 }

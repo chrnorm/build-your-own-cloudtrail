@@ -10,6 +10,9 @@ importers:
 
   admin:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: ^1.10.0
+        version: 1.10.0
       '@chakra-ui/icons':
         specifier: ^2.0.17
         version: 2.1.1(@chakra-ui/system@2.6.2)(react@18.3.1)
@@ -22,12 +25,24 @@ importers:
       '@codemirror/commands':
         specifier: ^6.6.1
         version: 6.6.1
+      '@connectrpc/connect':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)
+      '@connectrpc/connect-query':
+        specifier: ^1.4.1
+        version: 1.4.1(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0)(@tanstack/react-query@5.55.4)(react-dom@18.3.1)(react@18.3.1)
+      '@connectrpc/connect-web':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0)
       '@emotion/react':
         specifier: ^11.10.0
         version: 11.13.3(@types/react@18.3.5)(react@18.3.1)
       '@emotion/styled':
         specifier: ^11.10.0
         version: 11.13.0(@emotion/react@11.13.3)(@types/react@18.3.5)(react@18.3.1)
+      '@tanstack/react-query':
+        specifier: ^5.55.4
+        version: 5.55.4(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.20.5
         version: 8.20.5(react-dom@18.3.1)(react@18.3.1)
@@ -56,6 +71,18 @@ importers:
         specifier: ^6.26.1
         version: 6.26.1(react-dom@18.3.1)(react@18.3.1)
     devDependencies:
+      '@bufbuild/buf':
+        specifier: ^1.40.1
+        version: 1.40.1
+      '@bufbuild/protoc-gen-es':
+        specifier: ^1.10.0
+        version: 1.10.0(@bufbuild/protobuf@1.10.0)
+      '@connectrpc/protoc-gen-connect-es':
+        specifier: ^1.4.0
+        version: 1.4.0(@bufbuild/protoc-gen-es@1.10.0)(@connectrpc/connect@1.4.0)
+      '@connectrpc/protoc-gen-connect-query':
+        specifier: ^1.4.1
+        version: 1.4.1(@bufbuild/protoc-gen-es@1.10.0)
       '@eslint/js':
         specifier: ^9.9.0
         version: 9.9.1
@@ -779,6 +806,103 @@ packages:
       '@babel/helper-string-parser': 7.24.8
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
+
+  /@bufbuild/buf-darwin-arm64@1.40.1:
+    resolution: {integrity: sha512-MGhSRT81Ham0D88/wE2Fox5RJk/vtVj42HoviMqKd0Iw7oGa/FyOmLdoBWdsZD9GRARBouCs7NmHOiiL3k84NQ==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@bufbuild/buf-darwin-x64@1.40.1:
+    resolution: {integrity: sha512-a4sveftVTfNEaF2QjsvJhrpvxoMpv9jRf2Lxr5s2az9q4pdIfiHG1JvRrPBIl/uvxSspMm5bd2cGrXTxKBsHxA==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@bufbuild/buf-linux-aarch64@1.40.1:
+    resolution: {integrity: sha512-107W29/07TDb4AVa3TmvUEJWqIKU4HvDPQAX9LG78P0D013O/jXDRGchn/r8suass0sjP2rQdlVn6c9aXpjEcw==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@bufbuild/buf-linux-x64@1.40.1:
+    resolution: {integrity: sha512-1HrDslgIySGdvAXDpkaaoqDfulQ81AEa4iO8KdCNe6psI0li1h7PJgY2+7mqnW3wDD0T0XL0NBOdjEZ6fvctgQ==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@bufbuild/buf-win32-arm64@1.40.1:
+    resolution: {integrity: sha512-CLosmHJoB1mp5EGV/Ldzg111woWbrQ+wA98Wq+GI7je/eiWACVIQp6fT5j8Ksyfuv6NCX2SwVjTqR3iiMgX/nA==}
+    engines: {node: '>=12'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@bufbuild/buf-win32-x64@1.40.1:
+    resolution: {integrity: sha512-ioSLtqP4U8nbh+4HhV4K0mSN7HNcNulMq9ZZ+yhGzrBS+T9+W+e45jnOyhWjN5WN/A6+sqTeSDJ5Q32PM+OyNg==}
+    engines: {node: '>=12'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@bufbuild/buf@1.40.1:
+    resolution: {integrity: sha512-rtsML4qejJ453Z81+4jlKvQxGHrXPP7g5OflQME3lgss4L2+fdeyVkb1mieOMHnhqYpVqOAus926IvYgBgzCiw==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    optionalDependencies:
+      '@bufbuild/buf-darwin-arm64': 1.40.1
+      '@bufbuild/buf-darwin-x64': 1.40.1
+      '@bufbuild/buf-linux-aarch64': 1.40.1
+      '@bufbuild/buf-linux-x64': 1.40.1
+      '@bufbuild/buf-win32-arm64': 1.40.1
+      '@bufbuild/buf-win32-x64': 1.40.1
+    dev: true
+
+  /@bufbuild/protobuf@1.10.0:
+    resolution: {integrity: sha512-QDdVFLoN93Zjg36NoQPZfsVH9tZew7wKDKyV5qRdj8ntT4wQCOradQjRaTdwMhWUYsgKsvCINKKm87FdEk96Ag==}
+
+  /@bufbuild/protoc-gen-es@1.10.0(@bufbuild/protobuf@1.10.0):
+    resolution: {integrity: sha512-zBYBsVT/ul4uZb6F+kD7/k4sWNHVVbEPfJwKi0FDr+9VJo8MKIofI6pkr5ksBLr4fi/74r+e/75Xi/0clL5dXg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    peerDependencies:
+      '@bufbuild/protobuf': 1.10.0
+    peerDependenciesMeta:
+      '@bufbuild/protobuf':
+        optional: true
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@bufbuild/protoplugin': 1.10.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@bufbuild/protoplugin@1.10.0:
+    resolution: {integrity: sha512-u6NE4vL0lw1+EK4/PiE/SQB7fKO4LRJNTEScIXVOi2x88K/c8WKc/k0KyEaA0asVBMpwekJQZGnRyj04ZtN5Gg==}
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@typescript/vfs': 1.6.0(typescript@4.5.2)
+      typescript: 4.5.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
 
   /@chakra-ui/accordion@2.3.1(@chakra-ui/system@2.6.2)(framer-motion@6.5.1)(react@18.3.1):
     resolution: {integrity: sha512-FSXRm8iClFyU+gVaXisOSEw0/4Q+qZbFRiuhIAkVU6Boj0FxAMrlo9a8AV5TuF77rgaHytCdHk0Ng+cyUijrag==}
@@ -2155,6 +2279,78 @@ packages:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
     dev: false
+
+  /@connectrpc/connect-query@1.4.1(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0)(@tanstack/react-query@5.55.4)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-kRv0ka+kSBpnG/56H/vLbQEHkcaFkVb2tZ4fo5m6V3AxKMFvrl35i2nO7+9cmPjhzzbTbE8W/zJqYZkO4YE+FA==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.3.3
+      '@connectrpc/connect': ^1.1.2
+      '@tanstack/react-query': 5.x
+      react: ^18.3.1
+      react-dom: ^18.3.1
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
+      '@tanstack/react-query': 5.55.4(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      stable-hash: 0.0.4
+    dev: false
+
+  /@connectrpc/connect-web@1.4.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.4.0):
+    resolution: {integrity: sha512-13aO4psFbbm7rdOFGV0De2Za64DY/acMspgloDlcOKzLPPs0yZkhp1OOzAQeiAIr7BM/VOHIA3p8mF0inxCYTA==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.4.2
+      '@connectrpc/connect': 1.4.0
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
+    dev: false
+
+  /@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.10.0):
+    resolution: {integrity: sha512-vZeOkKaAjyV4+RH3+rJZIfDFJAfr+7fyYr6sLDKbYX3uuTVszhFe9/YKf5DNqrDb5cKdKVlYkGn6DTDqMitAnA==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.4.2
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+
+  /@connectrpc/protoc-gen-connect-es@1.4.0(@bufbuild/protoc-gen-es@1.10.0)(@connectrpc/connect@1.4.0):
+    resolution: {integrity: sha512-/7vQ8Q7mEBhV8qEVh/eifRQlQnf8EJ6weMwCD2DljVAQRlZYcW9SLxjYZhV1uM1ZZqQC7Cw2vvgXRg2XQswHBg==}
+    engines: {node: '>=16.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@bufbuild/protoc-gen-es': ^1.7.2
+      '@connectrpc/connect': 1.4.0
+    peerDependenciesMeta:
+      '@bufbuild/protoc-gen-es':
+        optional: true
+      '@connectrpc/connect':
+        optional: true
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@bufbuild/protoc-gen-es': 1.10.0(@bufbuild/protobuf@1.10.0)
+      '@bufbuild/protoplugin': 1.10.0
+      '@connectrpc/connect': 1.4.0(@bufbuild/protobuf@1.10.0)
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
+  /@connectrpc/protoc-gen-connect-query@1.4.1(@bufbuild/protoc-gen-es@1.10.0):
+    resolution: {integrity: sha512-L/x+f1x+GWgfsGvRs2XZjdX044cchIAiNOSWQFavOrfHadZD8Kb8qFykHHDj7Cw+7CyQ7+SeW5UxtIkBB1WB3Q==}
+    engines: {node: '>=16'}
+    hasBin: true
+    peerDependencies:
+      '@bufbuild/protoc-gen-es': 1.x
+    peerDependenciesMeta:
+      '@bufbuild/protoc-gen-es':
+        optional: true
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@bufbuild/protoc-gen-es': 1.10.0(@bufbuild/protobuf@1.10.0)
+      '@bufbuild/protoplugin': 1.10.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
 
   /@emotion/babel-plugin@11.12.0:
     resolution: {integrity: sha512-y2WQb+oP8Jqvvclh8Q55gLUyb7UFvgv7eJfsj7td5TToBrIUtPay2kMrZi4xjq9qw2vD0ZR5fSho0yqoFgX7Rw==}
@@ -3831,6 +4027,19 @@ packages:
       '@swc/counter': 0.1.3
     dev: true
 
+  /@tanstack/query-core@5.55.4:
+    resolution: {integrity: sha512-uoRqNnRfzOH4OMIoxj8E2+Us89UIGXfau981qYJWsNMkFS1GXR4UIyzUTVGq4N7SDLHgFPpo6IOazqUV5gkMZA==}
+    dev: false
+
+  /@tanstack/react-query@5.55.4(react@18.3.1):
+    resolution: {integrity: sha512-e3uX5XkLD9oTV66/VsVpkYz3Ds/ps/Yk+V5d89xthAbtNIKKBEm4FdNb9yISFzGEGezUzVO68qmfmiSrtScvsg==}
+    peerDependencies:
+      react: ^18 || ^19
+    dependencies:
+      '@tanstack/query-core': 5.55.4
+      react: 18.3.1
+    dev: false
+
   /@tanstack/react-table@8.20.5(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-WEHopKw3znbUZ61s9i0+i9g8drmDo6asTWbrQh8Us63DAk/M0FkmIqERew6P71HI75ksZ2Pxyuf4vvKh9rAkiA==}
     engines: {node: '>=12'}
@@ -4587,6 +4796,17 @@ packages:
     dependencies:
       '@typescript-eslint/types': 8.4.0
       eslint-visitor-keys: 3.4.3
+    dev: true
+
+  /@typescript/vfs@1.6.0(typescript@4.5.2):
+    resolution: {integrity: sha512-hvJUjNVeBMp77qPINuUvYXj4FyWeeMMKZkxEATEU3hqBAQ7qdTBCUFT7Sp0Zu0faeEtFf+ldXxMEDr/bk73ISg==}
+    peerDependencies:
+      typescript: '*'
+    dependencies:
+      debug: 4.3.6
+      typescript: 4.5.2
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /@uiw/codemirror-extensions-basic-setup@4.23.0(@codemirror/autocomplete@6.18.0)(@codemirror/commands@6.6.1)(@codemirror/language@6.10.2)(@codemirror/lint@6.8.1)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.33.0):
@@ -10310,6 +10530,10 @@ packages:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
     dev: true
 
+  /stable-hash@0.0.4:
+    resolution: {integrity: sha512-LjdcbuBeLcdETCrPn9i8AYAZ1eCtu4ECAWtP7UleOiZ9LzVxRzzUZEoZ8zB24nhkQnDWyET0I+3sWokSDS3E7g==}
+    dev: false
+
   /stack-generator@2.0.10:
     resolution: {integrity: sha512-mwnua/hkqM6pF4k8SnmZ2zfETsRUpWXREfA/goT8SLCV4iOFa4bzOX2nDipWAZFPTjLvQB82f5yaodMVhK0yJQ==}
     dependencies:
@@ -10791,6 +11015,12 @@ packages:
     transitivePeerDependencies:
       - eslint
       - supports-color
+    dev: true
+
+  /typescript@4.5.2:
+    resolution: {integrity: sha512-5BlMof9H1yGt0P8/WF+wPNw6GfctgGjXp5hkblpyT+8rkASSmkUKMXrxR0Xg8ThVCi/JnHQiKXeBaEwCeQwMFw==}
+    engines: {node: '>=4.2.0'}
+    hasBin: true
     dev: true
 
   /typescript@4.7.4:

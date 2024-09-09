@@ -6,6 +6,9 @@ import { Layout } from "./components/Layout";
 import { Allotment, AllotmentHandle } from "allotment";
 import "allotment/dist/style.css";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Badge,
   Box,
   Flex,
@@ -38,6 +41,10 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useMutation } from "@connectrpc/connect-query";
+import { previewPolicy } from "./gen/authz/v1/authz-AuthzService_connectquery";
+import { Decision, PreviewPolicyResponse } from "./gen/authz/v1/authz_pb";
+import { ConnectError } from "@connectrpc/connect";
 
 const customKeymap = keymap.of([
   {
@@ -52,12 +59,85 @@ const customKeymap = keymap.of([
 ]);
 
 function App() {
+  const previewPolicyMutation = useMutation(previewPolicy);
+
+  const [changes, setChanges] = useState<Evaluation[]>([]);
+  const [errorText, setErrorText] = useState<string>();
+  const [tests, setTests] = useState<AccessTest[]>([]);
+
   const [value, setValue] = React.useState(
     "permit (principal, action, resource);",
   );
-  const onChange = React.useCallback((val: string, viewUpdate: ViewUpdate) => {
-    setValue(val);
-  }, []);
+
+  const onChange = React.useCallback(
+    async (val: string, viewUpdate: ViewUpdate) => {
+      setValue(val);
+
+      try {
+        const result = await previewPolicyMutation.mutateAsync({
+          cedarPolicyText: val,
+        });
+        setErrorText(undefined);
+
+        const newChanges: Evaluation[] = result.permissionChanges.map((c) => ({
+          decision: c.decision === Decision.ALLOW ? "allow" : "deny",
+          request: {
+            action: {
+              id: c.request!.action!.id,
+              type: c.request!.action!.type,
+            },
+            principal: {
+              id: c.request!.principal!.id,
+              type: c.request!.principal!.type,
+            },
+            resource: {
+              id: c.request!.resource!.id,
+              type: c.request!.resource!.type,
+            },
+          },
+        }));
+
+        setChanges(newChanges);
+
+        const newTests: AccessTest[] = result.testResults.map((t) => ({
+          name: t.name,
+          pass: t.pass,
+          request: {
+            action: {
+              id: t.request!.action!.id,
+              type: t.request!.action!.type,
+            },
+            principal: {
+              id: t.request!.principal!.id,
+              type: t.request!.principal!.type,
+            },
+            resource: {
+              id: t.request!.resource!.id,
+              type: t.request!.resource!.type,
+            },
+          },
+          got: t.got === Decision.ALLOW ? "allow" : "deny",
+          want: t.want === Decision.ALLOW ? "allow" : "deny",
+        }));
+        setTests(newTests);
+      } catch (e: unknown) {
+        if (e instanceof ConnectError) {
+          setErrorText(e.message);
+        } else {
+          throw e;
+        }
+      }
+    },
+    [previewPolicyMutation],
+  );
+  const addedPermissions = useMemo(
+    () => changes.filter((c) => c.decision === "allow").length,
+    [changes],
+  );
+  const removedPermissions = useMemo(
+    () => changes.filter((c) => c.decision === "deny").length,
+    [changes],
+  );
 
   const ref = useRef<AllotmentHandle>(null);
   const resultsRef = useRef<AllotmentHandle>(null);
@@ -81,9 +161,20 @@ function App() {
             defaultSizes={[60, 40]}
             // onChange={onInputPanelChange}
           >
-            <Stack className="workflowEditor" h="100%" flexGrow={1} w="100%">
+            <Stack
+              className="workflowEditor"
+              h="100%"
+              flexGrow={1}
+              w="100%"
+              position="relative"
+            >
               <Flex pt={2} px={3}>
-                <Text textStyle={"Body/Medium"}>Policies</Text>
+                <HStack>
+                  <Text textStyle={"Body/Medium"}>Policies</Text>
+                  {errorText !== undefined ? (
+                    <WarningIcon color="#f85149" />
+                  ) : null}
+                </HStack>
               </Flex>
               <Flex overflowY="scroll" width="100%">
                 <CodeMirror
@@ -94,6 +185,12 @@ function App() {
                   indentWithTab={false}
                   onChange={onChange}
                 />
+                {errorText !== undefined ? (
+                  <Alert status="error" pos={"absolute"} bottom="0">
+                    <AlertIcon />
+                    <AlertDescription>{errorText}</AlertDescription>
+                  </Alert>
+                ) : null}
               </Flex>
             </Stack>
           </Allotment>
@@ -112,47 +209,13 @@ function App() {
                 justifyContent={"space-between"}
               >
                 <Text textStyle={"Body/Medium"}>Preview Changes</Text>
-                <DiffStat added={1} removed={1} />
+                <DiffStat
+                  added={addedPermissions}
+                  removed={removedPermissions}
+                />
               </Flex>
               <Flex px={3}>
-                <PermissionChangeTable
-                  evals={[
-                    {
-                      decision: "allow",
-                      request: {
-                        action: {
-                          id: "GetObject",
-                          type: "AWS::S3::Action",
-                        },
-                        resource: {
-                          id: "123456",
-                          type: "S3::Object",
-                        },
-                        principal: {
-                          id: "alice",
-                          type: "User",
-                        },
-                      },
-                    },
-                    {
-                      decision: "deny",
-                      request: {
-                        action: {
-                          id: "GetObject",
-                          type: "AWS::S3::Action",
-                        },
-                        resource: {
-                          id: "123456",
-                          type: "S3::Object",
-                        },
-                        principal: {
-                          id: "bob",
-                          type: "User",
-                        },
-                      },
-                    },
-                  ]}
-                />
+                <PermissionChangeTable evals={changes} />
               </Flex>
             </Stack>
             <CollapsePanel
@@ -169,70 +232,7 @@ function App() {
                 </Flex>
               }
             >
-              <TestResultList
-                tests={[
-                  {
-                    name: "A user can read their own receipt metadata",
-                    got: "allow",
-                    want: "allow",
-                    pass: true,
-                    request: {
-                      action: {
-                        id: "GetReceipt",
-                        type: "Action",
-                      },
-                      resource: {
-                        id: "1",
-                        type: "Receipt",
-                      },
-                      principal: {
-                        id: "alice",
-                        type: "User",
-                      },
-                    },
-                  },
-                  {
-                    name: "A user can read their own receipt S3 object",
-                    got: "allow",
-                    want: "allow",
-                    pass: true,
-                    request: {
-                      action: {
-                        id: "GetObject",
-                        type: "AWS::S3::Action",
-                      },
-                      resource: {
-                        id: "123456",
-                        type: "S3::Object",
-                      },
-                      principal: {
-                        id: "alice",
-                        type: "User",
-                      },
-                    },
-                  },
-                  {
-                    name: "Cross-user S3 object access",
-                    got: "allow",
-                    want: "deny",
-                    pass: false,
-                    request: {
-                      action: {
-                        id: "GetObject",
-                        type: "AWS::S3::Action",
-                      },
-                      resource: {
-                        id: "123456",
-                        type: "S3::Object",
-                      },
-                      principal: {
-                        id: "bob",
-                        type: "User",
-                      },
-                    },
-                  },
-                ]}
-              />
+              <TestResultList tests={tests} />
             </CollapsePanel>
           </Allotment>
         </Allotment>
@@ -421,39 +421,55 @@ const PermissionChangeTable: React.FC<PermissionChangeTableProps> = ({
   });
 
   return (
-    <Table
-      size={"sm"}
-      sx={{ tableLayout: "fixed", width: "full" }}
-      variant="unstyled"
-    >
-      <Thead bg="#252626" borderTopRadius="4px">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <Tr key={headerGroup.id} borderTopWidth={"0px"}>
-            {headerGroup.headers.map((header) => (
-              <Th key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
-              </Th>
-            ))}
-          </Tr>
-        ))}
-      </Thead>
-      <Tbody>
-        {table.getRowModel().rows.map((row) => (
-          <Tr borderBottomWidth={"1px"} key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <Td key={cell.id} fontSize={"13px"}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </Td>
-            ))}
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
+    <Stack>
+      <Table
+        size={"sm"}
+        sx={{ tableLayout: "fixed", width: "full" }}
+        variant="unstyled"
+      >
+        <Thead bg="#252626" borderTopRadius="4px">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Tr key={headerGroup.id} borderTopWidth={"0px"}>
+              {headerGroup.headers.map((header) => (
+                <Th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </Th>
+              ))}
+            </Tr>
+          ))}
+        </Thead>
+        <Tbody>
+          {table.getRowModel().rows.map((row) => (
+            <Tr borderBottomWidth={"1px"} key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <Td
+                  key={cell.id}
+                  fontSize={"13px"}
+                  bg={
+                    cell.row.original.decision === "allow"
+                      ? "#2ea04326"
+                      : "#f8514926"
+                  }
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </Td>
+              ))}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+      {evals.length === 0 ? (
+        <Text textAlign={"center"} fontSize={"sm"} mt={2}>
+          No access changes. Access changes will be shown here when you edit the
+          Cedar policies.
+        </Text>
+      ) : null}
+    </Stack>
   );
 };
 

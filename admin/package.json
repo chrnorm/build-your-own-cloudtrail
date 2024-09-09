@@ -7,15 +7,21 @@
     "dev": "vite --port 3002",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate": "npx buf generate ../proto"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^1.10.0",
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^2.2.8",
     "@codemirror/autocomplete": "^6.18.0",
     "@codemirror/commands": "^6.6.1",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-query": "^1.4.1",
+    "@connectrpc/connect-web": "^1.4.0",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
+    "@tanstack/react-query": "^5.55.4",
     "@tanstack/react-table": "^8.20.5",
     "@uiw/codemirror-theme-github": "^4.23.1",
     "@uiw/react-codemirror": "^4.23.0",
@@ -27,6 +33,10 @@
     "react-router-dom": "^6.26.1"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.40.1",
+    "@bufbuild/protoc-gen-es": "^1.10.0",
+    "@connectrpc/protoc-gen-connect-es": "^1.4.0",
+    "@connectrpc/protoc-gen-connect-query": "^1.4.1",
     "@eslint/js": "^9.9.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

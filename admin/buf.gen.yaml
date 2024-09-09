@@ -1,0 +1,13 @@
+version: v2
+plugins:
+  # This will invoke protoc-gen-es and write output to src/gen
+  - local: protoc-gen-es
+    out: src/gen
+    opt: target=ts
+  # This will invoke protoc-gen-connect-query
+  - local: protoc-gen-connect-query
+    out: src/gen
+    opt: target=ts
+
+inputs:
+  - directory: ../proto

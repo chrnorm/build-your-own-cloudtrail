@@ -1,0 +1,12 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/chrnorm/build-your-own-cloudtrail/gen
+plugins:
+  - plugin: buf.build/protocolbuffers/go
+    out: gen
+    opt: paths=source_relative
+  - plugin: buf.build/connectrpc/go:v1.14.0
+    out: gen
+    opt: paths=source_relative

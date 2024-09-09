@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package receiptapp.v1;
+
+service ReceiptService {
+    rpc ListReceipts(ListReceiptsRequest) returns (ListReceiptsResponse) {
+        // option (cedar.read_only) = true;
+    }
+    rpc GetReceiptDownloadURL(GetReceiptDownloadURLRequest) returns (GetReceiptDownloadURLResponse) {
+        // option (cedar.read_only) = true;
+    }
+}
+
+message ListReceiptsRequest {}
+
+message ListReceiptsResponse {
+    repeated Receipt receipts = 1;
+}
+
+message Receipt {
+    int64 id = 1;
+    string merchant_name = 2;
+    string date = 3;
+    float total_amount = 4;
+}
+
+message GetReceiptDownloadURLRequest {
+    int64 receipt_id = 1;
+}
+
+message GetReceiptDownloadURLResponse {
+    string download_url = 1;
+}

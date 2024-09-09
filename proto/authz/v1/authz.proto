@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package authz.v1;
+
+service AuthzService {
+    rpc PreviewPolicy(PreviewPolicyRequest) returns (PreviewPolicyResponse) {}
+}
+
+message PreviewPolicyRequest {
+    string cedar_policy_text = 1;
+}
+
+message PreviewPolicyResponse {
+    repeated Evaluation permission_changes = 1;
+}
+
+message EID {
+    string type = 1;
+    string id = 2;
+}
+
+message AuthzRequest {
+    EID principal = 1;
+    EID action = 2;
+    EID resource = 3;
+}
+
+message Evaluation {
+    AuthzRequest request = 1;
+    Decision decision = 2;
+}
+
+enum Decision {
+    DECISION_UNSPECIFIED = 0;
+    DECISION_ALLOW = 1;
+    DECISION_DENY = 2;
+}

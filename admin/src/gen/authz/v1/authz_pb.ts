@@ -33,6 +33,148 @@ proto3.util.setEnumType(Decision, "authz.v1.Decision", [
 ]);
 
 /**
+ * @generated from message authz.v1.GetPolicyRequest
+ */
+export class GetPolicyRequest extends Message<GetPolicyRequest> {
+  constructor(data?: PartialMessage<GetPolicyRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.GetPolicyRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetPolicyRequest {
+    return new GetPolicyRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetPolicyRequest {
+    return new GetPolicyRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetPolicyRequest {
+    return new GetPolicyRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetPolicyRequest | PlainMessage<GetPolicyRequest> | undefined, b: GetPolicyRequest | PlainMessage<GetPolicyRequest> | undefined): boolean {
+    return proto3.util.equals(GetPolicyRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.GetPolicyResponse
+ */
+export class GetPolicyResponse extends Message<GetPolicyResponse> {
+  /**
+   * @generated from field: string cedar_policy_text = 1;
+   */
+  cedarPolicyText = "";
+
+  constructor(data?: PartialMessage<GetPolicyResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.GetPolicyResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "cedar_policy_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetPolicyResponse {
+    return new GetPolicyResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetPolicyResponse {
+    return new GetPolicyResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetPolicyResponse {
+    return new GetPolicyResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetPolicyResponse | PlainMessage<GetPolicyResponse> | undefined, b: GetPolicyResponse | PlainMessage<GetPolicyResponse> | undefined): boolean {
+    return proto3.util.equals(GetPolicyResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.UpdatePolicyRequest
+ */
+export class UpdatePolicyRequest extends Message<UpdatePolicyRequest> {
+  /**
+   * @generated from field: string cedar_policy_text = 1;
+   */
+  cedarPolicyText = "";
+
+  constructor(data?: PartialMessage<UpdatePolicyRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.UpdatePolicyRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "cedar_policy_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdatePolicyRequest {
+    return new UpdatePolicyRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdatePolicyRequest {
+    return new UpdatePolicyRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdatePolicyRequest {
+    return new UpdatePolicyRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: UpdatePolicyRequest | PlainMessage<UpdatePolicyRequest> | undefined, b: UpdatePolicyRequest | PlainMessage<UpdatePolicyRequest> | undefined): boolean {
+    return proto3.util.equals(UpdatePolicyRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.UpdatePolicyResponse
+ */
+export class UpdatePolicyResponse extends Message<UpdatePolicyResponse> {
+  /**
+   * @generated from field: string cedar_policy_text = 1;
+   */
+  cedarPolicyText = "";
+
+  constructor(data?: PartialMessage<UpdatePolicyResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.UpdatePolicyResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "cedar_policy_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdatePolicyResponse {
+    return new UpdatePolicyResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdatePolicyResponse {
+    return new UpdatePolicyResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdatePolicyResponse {
+    return new UpdatePolicyResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: UpdatePolicyResponse | PlainMessage<UpdatePolicyResponse> | undefined, b: UpdatePolicyResponse | PlainMessage<UpdatePolicyResponse> | undefined): boolean {
+    return proto3.util.equals(UpdatePolicyResponse, a, b);
+  }
+}
+
+/**
  * @generated from message authz.v1.PreviewAuthorizationRequest
  */
 export class PreviewAuthorizationRequest extends Message<PreviewAuthorizationRequest> {

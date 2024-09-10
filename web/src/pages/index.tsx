@@ -1,55 +1,18 @@
-import { useState, KeyboardEvent } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, SearchIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { CalendarIcon, SearchIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 type Receipt = {
   id: string;
   date: string;
+  owner: string;
   merchant: string;
   amount: number;
   category: string;
 };
-
-const receipts: Receipt[] = [
-  {
-    id: "1",
-    date: "2023-05-01",
-    merchant: "Grocery Store",
-    amount: 56.78,
-    category: "Food",
-  },
-  {
-    id: "2",
-    date: "2023-05-03",
-    merchant: "Gas Station",
-    amount: 45.0,
-    category: "Transportation",
-  },
-  {
-    id: "3",
-    date: "2023-05-05",
-    merchant: "Bookstore",
-    amount: 32.5,
-    category: "Education",
-  },
-  {
-    id: "4",
-    date: "2023-05-07",
-    merchant: "Restaurant",
-    amount: 89.99,
-    category: "Food",
-  },
-  {
-    id: "5",
-    date: "2023-05-10",
-    merchant: "Electronics Store",
-    amount: 299.99,
-    category: "Technology",
-  },
-];
 
 const categoryColors: Record<string, string> = {
   Food: "bg-green-100 text-green-700",
@@ -58,22 +21,41 @@ const categoryColors: Record<string, string> = {
   Technology: "bg-purple-100 text-purple-700",
 };
 
+const fetchReceipts = async (): Promise<Receipt[]> => {
+  const response = await fetch("http://localhost:9090/receipts");
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return response.json() as Promise<Receipt[]>;
+};
+
 export default function ReceiptListView() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredReceipts = receipts.filter(
-    (receipt) =>
-      receipt.merchant.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      receipt.category.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const {
+    data: receipts,
+    isLoading,
+    error,
+  } = useQuery<Receipt[], Error>({
+    queryKey: ["receipts"],
+    queryFn: fetchReceipts,
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error)
+    return <div className="p-2">An error has occurred: {error.message}</div>;
+
+  const filteredReceipts =
+    receipts?.filter(
+      (receipt) =>
+        receipt.merchant.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        receipt.category.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">My Receipts</h1>
-        <Button>
-          <PlusIcon className="mr-2 h-4 w-4" /> Add Receipt
-        </Button>
       </div>
 
       <div className="relative mb-6">
@@ -121,21 +103,6 @@ export default function ReceiptListView() {
                     <span className="text-sm font-medium text-gray-900">
                       ${receipt.amount.toFixed(2)}
                     </span>
-                    <div className="flex space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-600 hover:text-red-600"
-                        aria-label="Delete receipt"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          // Handle delete action
-                        }}
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </li>

@@ -8,20 +8,16 @@ import (
 	"github.com/cedar-policy/cedar-go/types"
 	authzv1 "github.com/chrnorm/build-your-own-cloudtrail/gen/authz/v1"
 	"github.com/chrnorm/build-your-own-cloudtrail/pkg/accesstest"
+	"github.com/chrnorm/build-your-own-cloudtrail/pkg/to_api"
 )
 
 func (s *Service) PreviewPolicy(ctx context.Context, req *connect.Request[authzv1.PreviewPolicyRequest]) (*connect.Response[authzv1.PreviewPolicyResponse], error) {
-	var oldPolicy cedar.Policy
-
 	var evals []*authzv1.Evaluation
 
-	err := oldPolicy.UnmarshalCedar([]byte("permit (principal, action, resource);"))
+	oldPS, err := s.PolicyStorage.GetPolicySet(ctx)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+		return nil, err
 	}
-
-	oldPS := cedar.NewPolicySet()
-	oldPS.Store("policy0", &oldPolicy)
 
 	newPS, err := cedar.NewPolicySetFromBytes("", []byte(req.Msg.CedarPolicyText))
 	if err != nil {
@@ -50,8 +46,8 @@ func (s *Service) PreviewPolicy(ctx context.Context, req *connect.Request[authzv
 
 			if oldDecision != newDecision {
 				evals = append(evals, &authzv1.Evaluation{
-					Request:  requestToAPI(req),
-					Decision: decisionToAPI(newDecision),
+					Request:  to_api.RequestToAPI(req),
+					Decision: to_api.DecisionToAPI(newDecision),
 				})
 			}
 		}
@@ -69,8 +65,8 @@ func (s *Service) PreviewPolicy(ctx context.Context, req *connect.Request[authzv
 
 			if oldDecision != newDecision {
 				evals = append(evals, &authzv1.Evaluation{
-					Request:  requestToAPI(req),
-					Decision: decisionToAPI(newDecision),
+					Request:  to_api.RequestToAPI(req),
+					Decision: to_api.DecisionToAPI(newDecision),
 				})
 			}
 		}
@@ -87,10 +83,10 @@ func (s *Service) PreviewPolicy(ctx context.Context, req *connect.Request[authzv
 		got, _ := newPS.IsAuthorized(entities, t.Request)
 		testResults = append(testResults, &authzv1.Test{
 			Name:    t.Name,
-			Request: requestToAPI(t.Request),
+			Request: to_api.RequestToAPI(t.Request),
 			Pass:    t.Want == got,
-			Want:    decisionToAPI(t.Want),
-			Got:     decisionToAPI(got),
+			Want:    to_api.DecisionToAPI(t.Want),
+			Got:     to_api.DecisionToAPI(got),
 		})
 	}
 
@@ -100,28 +96,4 @@ func (s *Service) PreviewPolicy(ctx context.Context, req *connect.Request[authzv
 	}
 
 	return connect.NewResponse(&res), nil
-}
-
-func decisionToAPI(dec cedar.Decision) authzv1.Decision {
-	if dec == true {
-		return authzv1.Decision_DECISION_ALLOW
-	}
-	return authzv1.Decision_DECISION_DENY
-}
-
-func requestToAPI(req cedar.Request) *authzv1.AuthzRequest {
-	return &authzv1.AuthzRequest{
-		Principal: &authzv1.EID{
-			Type: string(req.Principal.Type),
-			Id:   string(req.Principal.ID),
-		},
-		Action: &authzv1.EID{
-			Type: string(req.Action.Type),
-			Id:   string(req.Action.ID),
-		},
-		Resource: &authzv1.EID{
-			Type: string(req.Resource.Type),
-			Id:   string(req.Resource.ID),
-		},
-	}
 }

@@ -18,12 +18,12 @@ func (u User) ToCedar() types.Entity {
 }
 
 type Receipt struct {
-	ID       string
-	Merchant string
-	Amount   float32
-	Category string
-	Owner    string
-	Date     time.Time
+	ID       string    `json:"id"`
+	Merchant string    `json:"merchant"`
+	Amount   float32   `json:"amount"`
+	Category string    `json:"category"`
+	Owner    string    `json:"owner"`
+	Date     time.Time `json:"date"`
 }
 
 func (r Receipt) ToCedar() types.Entity {

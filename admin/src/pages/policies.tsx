@@ -1,5 +1,17 @@
-import React, { useMemo, useRef, useState } from "react";
-import CodeMirror, { keymap, ViewUpdate } from "@uiw/react-codemirror";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import CodeMirror, {
+  crosshairCursor,
+  drawSelection,
+  dropCursor,
+  EditorState,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+  rectangularSelection,
+  ViewUpdate,
+} from "@uiw/react-codemirror";
 import { cedar } from "codemirror-lang-cedar";
 import { githubDark } from "@uiw/codemirror-theme-github";
 import { Allotment, AllotmentHandle } from "allotment";
@@ -11,7 +23,6 @@ import {
   Badge,
   Box,
   Flex,
-  useDisclosure,
   HStack,
   IconButton,
   Spacer,
@@ -30,7 +41,16 @@ import {
   DrawerCloseButton,
   DrawerHeader,
   DrawerBody,
+  Button,
 } from "@chakra-ui/react";
+import {
+  defaultHighlightStyle,
+  syntaxHighlighting,
+  indentOnInput,
+  bracketMatching,
+  foldGutter,
+  foldKeymap,
+} from "@codemirror/language";
 import {
   CheckCircleIcon,
   ChevronDownIcon,
@@ -39,32 +59,54 @@ import {
   CloseIcon,
   WarningIcon,
 } from "@chakra-ui/icons";
-import { indentLess, indentMore } from "@codemirror/commands";
-import { acceptCompletion, completionStatus } from "@codemirror/autocomplete";
+import {
+  copyLineDown,
+  copyLineUp,
+  cursorMatchingBracket,
+  cursorSyntaxLeft,
+  cursorSyntaxRight,
+  defaultKeymap,
+  deleteLine,
+  historyKeymap,
+  indentLess,
+  indentMore,
+  indentSelection,
+  moveLineDown,
+  moveLineUp,
+  selectLine,
+  selectParentSyntax,
+  selectSyntaxLeft,
+  selectSyntaxRight,
+  simplifySelection,
+  toggleBlockComment,
+  toggleComment,
+  toggleTabFocusMode,
+} from "@codemirror/commands";
+import { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
+import {
+  acceptCompletion,
+  autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
+  completionKeymap,
+  completionStatus,
+} from "@codemirror/autocomplete";
+import { history } from "@codemirror/commands";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMutation } from "@connectrpc/connect-query";
-import { previewPolicy } from "../gen/authz/v1/authz-AuthzService_connectquery";
+import { useMutation, useQuery } from "@connectrpc/connect-query";
+import {
+  getPolicy,
+  previewPolicy,
+  updatePolicy,
+} from "../gen/authz/v1/authz-AuthzService_connectquery";
 import { Decision } from "../gen/authz/v1/authz_pb";
 import { ConnectError } from "@connectrpc/connect";
-import { useNavigate } from "react-router-dom";
 import { AccessPreview } from "../components/AccessPreview";
-
-const customKeymap = keymap.of([
-  {
-    key: "Tab",
-    preventDefault: true,
-    shift: indentLess,
-    run: (e) => {
-      if (!completionStatus(e.state)) return indentMore(e);
-      return acceptCompletion(e);
-    },
-  },
-]);
 
 function PoliciesPage() {
   const previewPolicyMutation = useMutation(previewPolicy);
@@ -73,8 +115,78 @@ function PoliciesPage() {
   const [errorText, setErrorText] = useState<string>();
   const [tests, setTests] = useState<AccessTest[]>([]);
 
-  const [value, setValue] = React.useState(
-    "permit (principal, action, resource);",
+  const getPolicyQuery = useQuery(getPolicy, {});
+  const updatePolicyMutation = useMutation(updatePolicy);
+
+  const [value, setValue] = React.useState("");
+
+  useEffect(() => {
+    if (getPolicyQuery.data !== undefined && value === "") {
+      setValue(getPolicyQuery.data.cedarPolicyText);
+    }
+  }, [getPolicyQuery.data, value]);
+
+  const customKeymap = useMemo(
+    () =>
+      keymap.of([
+        {
+          key: "Tab",
+          preventDefault: true,
+          shift: indentLess,
+          run: (e) => {
+            if (!completionStatus(e.state)) return indentMore(e);
+            return acceptCompletion(e);
+          },
+        },
+        {
+          key: "Mod-Enter",
+          run: (e) => {
+            updatePolicyMutation.mutate({
+              cedarPolicyText: e.state.doc.toString(),
+            });
+            setChanges([]);
+
+            return true;
+          },
+        },
+        {
+          key: "Alt-ArrowLeft",
+          mac: "Ctrl-ArrowLeft",
+          run: cursorSyntaxLeft,
+          shift: selectSyntaxLeft,
+        },
+        {
+          key: "Alt-ArrowRight",
+          mac: "Ctrl-ArrowRight",
+          run: cursorSyntaxRight,
+          shift: selectSyntaxRight,
+        },
+
+        { key: "Alt-ArrowUp", run: moveLineUp },
+        { key: "Shift-Alt-ArrowUp", run: copyLineUp },
+
+        { key: "Alt-ArrowDown", run: moveLineDown },
+        { key: "Shift-Alt-ArrowDown", run: copyLineDown },
+
+        { key: "Escape", run: simplifySelection },
+
+        { key: "Alt-l", mac: "Ctrl-l", run: selectLine },
+        { key: "Mod-i", run: selectParentSyntax, preventDefault: true },
+
+        { key: "Mod-[", run: indentLess },
+        { key: "Mod-]", run: indentMore },
+        { key: "Mod-Alt-\\", run: indentSelection },
+
+        { key: "Shift-Mod-k", run: deleteLine },
+
+        { key: "Shift-Mod-\\", run: cursorMatchingBracket },
+
+        { key: "Mod-/", run: toggleComment },
+        { key: "Alt-A", run: toggleBlockComment },
+
+        { key: "Ctrl-m", mac: "Shift-Alt-m", run: toggleTabFocusMode },
+      ]),
+    [updatePolicyMutation, setChanges],
   );
 
   const [selectedEval, setSelectedEval] = useState<Evaluation>();
@@ -179,21 +291,71 @@ function PoliciesPage() {
               w="100%"
               position="relative"
             >
-              <Flex pt={2} px={3}>
+              <Flex
+                pt={2}
+                px={3}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
                 <HStack>
                   <Text textStyle={"Body/Medium"}>Policies</Text>
                   {errorText !== undefined ? (
                     <WarningIcon color="#f85149" />
                   ) : null}
                 </HStack>
+                <Button
+                  size="xs"
+                  colorScheme="blue"
+                  isDisabled={errorText !== undefined}
+                  onClick={async () => {
+                    await updatePolicyMutation.mutateAsync({
+                      cedarPolicyText: value,
+                    });
+                    setChanges([]);
+                  }}
+                >
+                  Save
+                </Button>
               </Flex>
               <Flex overflowY="scroll" width="100%">
                 <CodeMirror
                   style={{ width: "100%" }}
                   value={value}
-                  extensions={[customKeymap, cedar()]}
+                  extensions={[
+                    customKeymap,
+                    cedar(),
+
+                    lineNumbers(),
+                    highlightActiveLineGutter(),
+                    highlightSpecialChars(),
+                    history(),
+                    foldGutter(),
+                    drawSelection(),
+                    dropCursor(),
+                    EditorState.allowMultipleSelections.of(true),
+                    indentOnInput(),
+                    syntaxHighlighting(defaultHighlightStyle, {
+                      fallback: true,
+                    }),
+                    bracketMatching(),
+                    closeBrackets(),
+                    autocompletion(),
+                    rectangularSelection(),
+                    crosshairCursor(),
+                    highlightActiveLine(),
+                    highlightSelectionMatches(),
+                    keymap.of([
+                      ...closeBracketsKeymap,
+                      ...defaultKeymap,
+                      ...searchKeymap,
+                      ...historyKeymap,
+                      ...foldKeymap,
+                      ...completionKeymap,
+                    ]),
+                  ]}
                   theme={githubDark}
                   indentWithTab={false}
+                  basicSetup={false}
                   onChange={onChange}
                 />
                 {errorText !== undefined ? (

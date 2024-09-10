@@ -10,6 +10,7 @@ import (
 	"github.com/cedar-policy/cedar-go"
 	"github.com/cedar-policy/cedar-go/types"
 	authzv1 "github.com/chrnorm/build-your-own-cloudtrail/gen/authz/v1"
+	"github.com/chrnorm/build-your-own-cloudtrail/pkg/to_api"
 	"github.com/common-fate/xid"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -27,12 +28,10 @@ func (s *Service) PreviewAuthorization(ctx context.Context, req *connect.Request
 			return nil, connect.NewError(connect.CodeInvalidArgument, err)
 		}
 	} else {
-		var oldPolicy cedar.Policy
-		err := oldPolicy.UnmarshalCedar([]byte("permit (principal, action, resource);"))
+		ps, err = s.PolicyStorage.GetPolicySet(ctx)
 		if err != nil {
-			return nil, connect.NewError(connect.CodeInvalidArgument, err)
+			return nil, err
 		}
-		ps.Store("policy0", &oldPolicy)
 	}
 
 	entities := s.Storage.Entities()
@@ -88,7 +87,7 @@ func (s *Service) PreviewAuthorization(ctx context.Context, req *connect.Request
 		Evaluation: &authzv1.Evaluation{
 			Id:          xid.New("eval"),
 			Request:     req.Msg.Request,
-			Decision:    decisionToAPI(decision),
+			Decision:    to_api.DecisionToAPI(decision),
 			EvaluatedAt: timestamppb.Now(),
 			DebugInformation: &authzv1.DebugInformation{
 				PolicySets: []*authzv1.PolicySet{

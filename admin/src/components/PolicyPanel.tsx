@@ -22,7 +22,7 @@ interface PolicyPanelProps {
 }
 
 export const PolicyPanel: React.FC<PolicyPanelProps> = (props) => {
-  const [relevant, setRelevant] = useState(true);
+  const [relevant] = useState(true);
 
   return (
     <Card variant="brand" w="full">

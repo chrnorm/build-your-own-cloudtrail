@@ -18,7 +18,14 @@ service AuthzService {
     rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
     rpc ListReceipts(ListReceiptsRequest) returns (ListReceiptsResponse) {}
     rpc ListS3Objects(ListS3ObjectsRequest) returns (ListS3ObjectsResponse) {}
+    rpc LogEvent(LogEventRequest) returns (LogEventResponse) {}
 }
+
+message LogEventRequest {
+    Event event = 1;
+}
+
+message LogEventResponse {}
 
 message GetPolicyRequest {}
 

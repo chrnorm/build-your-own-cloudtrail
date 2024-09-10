@@ -1,27 +1,43 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeftIcon, DownloadIcon, TrashIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeftIcon } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 type ReceiptDetail = {
   id: string;
   date: string;
+  owner: string;
   merchant: string;
   amount: number;
   category: string;
   imageUrl: string;
 };
 
-const receiptDetail: ReceiptDetail = {
-  id: "1",
-  date: "2023-05-01",
-  merchant: "Grocery Store",
-  amount: 56.78,
-  category: "Food",
-  imageUrl: "/placeholder.svg?height=800&width=600",
+const fetchReceiptDetail = async (id: string): Promise<ReceiptDetail> => {
+  const response = await fetch(`http://localhost:9090/receipts/${id}`);
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return response.json();
 };
 
 export default function ReceiptDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const {
+    data: receiptDetail,
+    isLoading,
+    error,
+  } = useQuery<ReceiptDetail, Error>({
+    queryKey: ["receipt", id],
+    queryFn: () => fetchReceiptDetail(id!),
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error)
+    return <div className="p-2">An error has occurred: {error.message}</div>;
+  if (!receiptDetail) return <div>No receipt found</div>;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
@@ -33,17 +49,7 @@ export default function ReceiptDetailPage() {
         </Link>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-[2fr,1fr]">
-        <Card className="overflow-hidden">
-          <CardContent className="p-0 relative aspect-[3/4] md:aspect-auto md:h-[calc(100vh-12rem)]">
-            <img
-              src={receiptDetail.imageUrl}
-              alt={`Receipt from ${receiptDetail.merchant}`}
-              className="object-contain"
-            />
-          </CardContent>
-        </Card>
-
+      <div className="grid gap-6 md:grid-cols-[1fr,3fr]">
         <div className="space-y-6">
           <Card>
             <CardContent className="p-6">
@@ -71,21 +77,29 @@ export default function ReceiptDetailPage() {
                     {receiptDetail.category}
                   </dd>
                 </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Owner</dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {receiptDetail.owner}
+                  </dd>
+                </div>
               </dl>
             </CardContent>
           </Card>
-
-          <div className="flex flex-col gap-4">
-            <Button className="w-full">
-              <DownloadIcon className="mr-2 h-4 w-4" />
-              Download Receipt
-            </Button>
-            <Button variant="destructive" className="w-full">
-              <TrashIcon className="mr-2 h-4 w-4" />
-              Delete Receipt
-            </Button>
-          </div>
         </div>
+
+        <Card className="overflow-hidden">
+          <CardContent className="p-0 relative aspect-[3/4] md:aspect-auto md:h-[calc(100vh-12rem)]">
+            <img
+              src={
+                receiptDetail.imageUrl ||
+                "/placeholder.svg?height=800&width=600"
+              }
+              alt={`Receipt from ${receiptDetail.merchant}`}
+              className="object-contain w-full h-full"
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

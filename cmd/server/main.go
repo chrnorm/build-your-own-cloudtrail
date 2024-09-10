@@ -12,6 +12,8 @@ import (
 	"github.com/chrnorm/build-your-own-cloudtrail/gen/receiptapp/v1/receiptappv1connect"
 	"github.com/chrnorm/build-your-own-cloudtrail/pkg/api/authzsvc"
 	"github.com/chrnorm/build-your-own-cloudtrail/pkg/api/receiptsvc"
+	"github.com/chrnorm/build-your-own-cloudtrail/pkg/event"
+	"github.com/chrnorm/build-your-own-cloudtrail/pkg/policy"
 	"github.com/chrnorm/build-your-own-cloudtrail/pkg/receipt"
 	"github.com/common-fate/apikit/logger"
 	"github.com/go-chi/chi/v5"
@@ -64,12 +66,21 @@ func run() error {
 		},
 	}))
 
+	policyStorage, err := policy.NewInMemoryStorage(`permit (principal, action, resource);`)
+	if err != nil {
+		return err
+	}
+
+	eventStorage := event.Storage{}
+
 	r.Mount(receiptappv1connect.NewReceiptServiceHandler(&receiptsvc.Service{
 		S3Client: s3client,
 	}))
 
 	r.Mount(authzv1connect.NewAuthzServiceHandler(&authzsvc.Service{
-		Storage: &storage,
+		Storage:       &storage,
+		PolicyStorage: policyStorage,
+		EventStorage:  &eventStorage,
 	}))
 
 	addr := ":8080"

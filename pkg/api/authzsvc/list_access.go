@@ -7,20 +7,16 @@ import (
 	"github.com/cedar-policy/cedar-go"
 	"github.com/cedar-policy/cedar-go/types"
 	authzv1 "github.com/chrnorm/build-your-own-cloudtrail/gen/authz/v1"
+	"github.com/chrnorm/build-your-own-cloudtrail/pkg/to_api"
 )
 
 func (s *Service) ListAccess(ctx context.Context, req *connect.Request[authzv1.ListAccessRequest]) (*connect.Response[authzv1.ListAccessResponse], error) {
-	var oldPolicy cedar.Policy
-
 	var evals []*authzv1.Evaluation
 
-	err := oldPolicy.UnmarshalCedar([]byte("permit (principal, action, resource);"))
+	ps, err := s.PolicyStorage.GetPolicySet(ctx)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+		return nil, err
 	}
-
-	ps := cedar.NewPolicySet()
-	ps.Store("policy0", &oldPolicy)
 
 	entities := s.Storage.Entities()
 
@@ -41,8 +37,8 @@ func (s *Service) ListAccess(ctx context.Context, req *connect.Request[authzv1.L
 
 			decision, _ := ps.IsAuthorized(entities, req)
 			evals = append(evals, &authzv1.Evaluation{
-				Request:  requestToAPI(req),
-				Decision: decisionToAPI(decision),
+				Request:  to_api.RequestToAPI(req),
+				Decision: to_api.DecisionToAPI(decision),
 			})
 		}
 
@@ -56,8 +52,8 @@ func (s *Service) ListAccess(ctx context.Context, req *connect.Request[authzv1.L
 
 			decision, _ := ps.IsAuthorized(entities, req)
 			evals = append(evals, &authzv1.Evaluation{
-				Request:  requestToAPI(req),
-				Decision: decisionToAPI(decision),
+				Request:  to_api.RequestToAPI(req),
+				Decision: to_api.DecisionToAPI(decision),
 			})
 		}
 	}

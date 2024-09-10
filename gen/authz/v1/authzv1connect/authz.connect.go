@@ -61,6 +61,8 @@ const (
 	// AuthzServiceListS3ObjectsProcedure is the fully-qualified name of the AuthzService's
 	// ListS3Objects RPC.
 	AuthzServiceListS3ObjectsProcedure = "/authz.v1.AuthzService/ListS3Objects"
+	// AuthzServiceLogEventProcedure is the fully-qualified name of the AuthzService's LogEvent RPC.
+	AuthzServiceLogEventProcedure = "/authz.v1.AuthzService/LogEvent"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
@@ -77,6 +79,7 @@ var (
 	authzServiceListUsersMethodDescriptor                  = authzServiceServiceDescriptor.Methods().ByName("ListUsers")
 	authzServiceListReceiptsMethodDescriptor               = authzServiceServiceDescriptor.Methods().ByName("ListReceipts")
 	authzServiceListS3ObjectsMethodDescriptor              = authzServiceServiceDescriptor.Methods().ByName("ListS3Objects")
+	authzServiceLogEventMethodDescriptor                   = authzServiceServiceDescriptor.Methods().ByName("LogEvent")
 )
 
 // AuthzServiceClient is a client for the authz.v1.AuthzService service.
@@ -92,6 +95,7 @@ type AuthzServiceClient interface {
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
 	ListReceipts(context.Context, *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error)
 	ListS3Objects(context.Context, *connect.Request[v1.ListS3ObjectsRequest]) (*connect.Response[v1.ListS3ObjectsResponse], error)
+	LogEvent(context.Context, *connect.Request[v1.LogEventRequest]) (*connect.Response[v1.LogEventResponse], error)
 }
 
 // NewAuthzServiceClient constructs a client for the authz.v1.AuthzService service. By default, it
@@ -170,6 +174,12 @@ func NewAuthzServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 			connect.WithSchema(authzServiceListS3ObjectsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		logEvent: connect.NewClient[v1.LogEventRequest, v1.LogEventResponse](
+			httpClient,
+			baseURL+AuthzServiceLogEventProcedure,
+			connect.WithSchema(authzServiceLogEventMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -186,6 +196,7 @@ type authzServiceClient struct {
 	listUsers                  *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
 	listReceipts               *connect.Client[v1.ListReceiptsRequest, v1.ListReceiptsResponse]
 	listS3Objects              *connect.Client[v1.ListS3ObjectsRequest, v1.ListS3ObjectsResponse]
+	logEvent                   *connect.Client[v1.LogEventRequest, v1.LogEventResponse]
 }
 
 // GetPolicy calls authz.v1.AuthzService.GetPolicy.
@@ -243,6 +254,11 @@ func (c *authzServiceClient) ListS3Objects(ctx context.Context, req *connect.Req
 	return c.listS3Objects.CallUnary(ctx, req)
 }
 
+// LogEvent calls authz.v1.AuthzService.LogEvent.
+func (c *authzServiceClient) LogEvent(ctx context.Context, req *connect.Request[v1.LogEventRequest]) (*connect.Response[v1.LogEventResponse], error) {
+	return c.logEvent.CallUnary(ctx, req)
+}
+
 // AuthzServiceHandler is an implementation of the authz.v1.AuthzService service.
 type AuthzServiceHandler interface {
 	GetPolicy(context.Context, *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error)
@@ -256,6 +272,7 @@ type AuthzServiceHandler interface {
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
 	ListReceipts(context.Context, *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error)
 	ListS3Objects(context.Context, *connect.Request[v1.ListS3ObjectsRequest]) (*connect.Response[v1.ListS3ObjectsResponse], error)
+	LogEvent(context.Context, *connect.Request[v1.LogEventRequest]) (*connect.Response[v1.LogEventResponse], error)
 }
 
 // NewAuthzServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -330,6 +347,12 @@ func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOpti
 		connect.WithSchema(authzServiceListS3ObjectsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	authzServiceLogEventHandler := connect.NewUnaryHandler(
+		AuthzServiceLogEventProcedure,
+		svc.LogEvent,
+		connect.WithSchema(authzServiceLogEventMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/authz.v1.AuthzService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthzServiceGetPolicyProcedure:
@@ -354,6 +377,8 @@ func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOpti
 			authzServiceListReceiptsHandler.ServeHTTP(w, r)
 		case AuthzServiceListS3ObjectsProcedure:
 			authzServiceListS3ObjectsHandler.ServeHTTP(w, r)
+		case AuthzServiceLogEventProcedure:
+			authzServiceLogEventHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -405,4 +430,8 @@ func (UnimplementedAuthzServiceHandler) ListReceipts(context.Context, *connect.R
 
 func (UnimplementedAuthzServiceHandler) ListS3Objects(context.Context, *connect.Request[v1.ListS3ObjectsRequest]) (*connect.Response[v1.ListS3ObjectsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.ListS3Objects is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) LogEvent(context.Context, *connect.Request[v1.LogEventRequest]) (*connect.Response[v1.LogEventResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.LogEvent is not implemented"))
 }

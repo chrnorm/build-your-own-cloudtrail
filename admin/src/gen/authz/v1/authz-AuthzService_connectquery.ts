@@ -4,7 +4,35 @@
 // @ts-nocheck
 
 import { MethodKind } from "@bufbuild/protobuf";
-import { GetAuthorizationEvaluationRequest, GetAuthorizationEvaluationResponse, GetEventRequest, GetEventResponse, ListAccessRequest, ListAccessResponse, ListEventsRequest, ListEventsResponse, ListReceiptsRequest, ListReceiptsResponse, ListS3ObjectsRequest, ListS3ObjectsResponse, ListUsersRequest, ListUsersResponse, PreviewAuthorizationRequest, PreviewAuthorizationResponse, PreviewPolicyRequest, PreviewPolicyResponse } from "./authz_pb.js";
+import { GetAuthorizationEvaluationRequest, GetAuthorizationEvaluationResponse, GetEventRequest, GetEventResponse, GetPolicyRequest, GetPolicyResponse, ListAccessRequest, ListAccessResponse, ListEventsRequest, ListEventsResponse, ListReceiptsRequest, ListReceiptsResponse, ListS3ObjectsRequest, ListS3ObjectsResponse, ListUsersRequest, ListUsersResponse, PreviewAuthorizationRequest, PreviewAuthorizationResponse, PreviewPolicyRequest, PreviewPolicyResponse, UpdatePolicyRequest, UpdatePolicyResponse } from "./authz_pb.js";
+
+/**
+ * @generated from rpc authz.v1.AuthzService.GetPolicy
+ */
+export const getPolicy = {
+  localName: "getPolicy",
+  name: "GetPolicy",
+  kind: MethodKind.Unary,
+  I: GetPolicyRequest,
+  O: GetPolicyResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.UpdatePolicy
+ */
+export const updatePolicy = {
+  localName: "updatePolicy",
+  name: "UpdatePolicy",
+  kind: MethodKind.Unary,
+  I: UpdatePolicyRequest,
+  O: UpdatePolicyResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
 
 /**
  * @generated from rpc authz.v1.AuthzService.PreviewAuthorization

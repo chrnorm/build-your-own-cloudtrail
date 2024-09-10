@@ -4,7 +4,77 @@
 // @ts-nocheck
 
 import { MethodKind } from "@bufbuild/protobuf";
-import { PreviewPolicyRequest, PreviewPolicyResponse } from "./authz_pb.js";
+import { GetAuthorizationEvaluationRequest, GetAuthorizationEvaluationResponse, GetEventRequest, GetEventResponse, ListAccessRequest, ListAccessResponse, ListEventsRequest, ListEventsResponse, ListReceiptsRequest, ListReceiptsResponse, ListS3ObjectsRequest, ListS3ObjectsResponse, ListUsersRequest, ListUsersResponse, PreviewAuthorizationRequest, PreviewAuthorizationResponse, PreviewPolicyRequest, PreviewPolicyResponse } from "./authz_pb.js";
+
+/**
+ * @generated from rpc authz.v1.AuthzService.PreviewAuthorization
+ */
+export const previewAuthorization = {
+  localName: "previewAuthorization",
+  name: "PreviewAuthorization",
+  kind: MethodKind.Unary,
+  I: PreviewAuthorizationRequest,
+  O: PreviewAuthorizationResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.ListAccess
+ */
+export const listAccess = {
+  localName: "listAccess",
+  name: "ListAccess",
+  kind: MethodKind.Unary,
+  I: ListAccessRequest,
+  O: ListAccessResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.ListEvents
+ */
+export const listEvents = {
+  localName: "listEvents",
+  name: "ListEvents",
+  kind: MethodKind.Unary,
+  I: ListEventsRequest,
+  O: ListEventsResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.GetEvent
+ */
+export const getEvent = {
+  localName: "getEvent",
+  name: "GetEvent",
+  kind: MethodKind.Unary,
+  I: GetEventRequest,
+  O: GetEventResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.GetAuthorizationEvaluation
+ */
+export const getAuthorizationEvaluation = {
+  localName: "getAuthorizationEvaluation",
+  name: "GetAuthorizationEvaluation",
+  kind: MethodKind.Unary,
+  I: GetAuthorizationEvaluationRequest,
+  O: GetAuthorizationEvaluationResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
 
 /**
  * @generated from rpc authz.v1.AuthzService.PreviewPolicy
@@ -15,6 +85,48 @@ export const previewPolicy = {
   kind: MethodKind.Unary,
   I: PreviewPolicyRequest,
   O: PreviewPolicyResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.ListUsers
+ */
+export const listUsers = {
+  localName: "listUsers",
+  name: "ListUsers",
+  kind: MethodKind.Unary,
+  I: ListUsersRequest,
+  O: ListUsersResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.ListReceipts
+ */
+export const listReceipts = {
+  localName: "listReceipts",
+  name: "ListReceipts",
+  kind: MethodKind.Unary,
+  I: ListReceiptsRequest,
+  O: ListReceiptsResponse,
+  service: {
+    typeName: "authz.v1.AuthzService"
+  }
+} as const;
+
+/**
+ * @generated from rpc authz.v1.AuthzService.ListS3Objects
+ */
+export const listS3Objects = {
+  localName: "listS3Objects",
+  name: "ListS3Objects",
+  kind: MethodKind.Unary,
+  I: ListS3ObjectsRequest,
+  O: ListS3ObjectsResponse,
   service: {
     typeName: "authz.v1.AuthzService"
   }

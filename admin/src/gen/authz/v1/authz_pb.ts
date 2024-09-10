@@ -4,7 +4,7 @@
 // @ts-nocheck
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
-import { Message, proto3 } from "@bufbuild/protobuf";
+import { Duration, Message, proto3, Timestamp } from "@bufbuild/protobuf";
 
 /**
  * @generated from enum authz.v1.Decision
@@ -31,6 +31,846 @@ proto3.util.setEnumType(Decision, "authz.v1.Decision", [
   { no: 1, name: "DECISION_ALLOW" },
   { no: 2, name: "DECISION_DENY" },
 ]);
+
+/**
+ * @generated from message authz.v1.PreviewAuthorizationRequest
+ */
+export class PreviewAuthorizationRequest extends Message<PreviewAuthorizationRequest> {
+  /**
+   * @generated from field: authz.v1.AuthzRequest request = 1;
+   */
+  request?: AuthzRequest;
+
+  /**
+   * Optionally provide a Cedar policy.
+   * If not provided, will default to the current policyset.
+   *
+   * @generated from field: string cedar_policy_text = 2;
+   */
+  cedarPolicyText = "";
+
+  /**
+   * @generated from field: bool use_custom_policy_text = 3;
+   */
+  useCustomPolicyText = false;
+
+  constructor(data?: PartialMessage<PreviewAuthorizationRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.PreviewAuthorizationRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "request", kind: "message", T: AuthzRequest },
+    { no: 2, name: "cedar_policy_text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "use_custom_policy_text", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PreviewAuthorizationRequest {
+    return new PreviewAuthorizationRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): PreviewAuthorizationRequest {
+    return new PreviewAuthorizationRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): PreviewAuthorizationRequest {
+    return new PreviewAuthorizationRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: PreviewAuthorizationRequest | PlainMessage<PreviewAuthorizationRequest> | undefined, b: PreviewAuthorizationRequest | PlainMessage<PreviewAuthorizationRequest> | undefined): boolean {
+    return proto3.util.equals(PreviewAuthorizationRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.PreviewAuthorizationResponse
+ */
+export class PreviewAuthorizationResponse extends Message<PreviewAuthorizationResponse> {
+  /**
+   * @generated from field: authz.v1.Evaluation evaluation = 1;
+   */
+  evaluation?: Evaluation;
+
+  constructor(data?: PartialMessage<PreviewAuthorizationResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.PreviewAuthorizationResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "evaluation", kind: "message", T: Evaluation },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PreviewAuthorizationResponse {
+    return new PreviewAuthorizationResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): PreviewAuthorizationResponse {
+    return new PreviewAuthorizationResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): PreviewAuthorizationResponse {
+    return new PreviewAuthorizationResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: PreviewAuthorizationResponse | PlainMessage<PreviewAuthorizationResponse> | undefined, b: PreviewAuthorizationResponse | PlainMessage<PreviewAuthorizationResponse> | undefined): boolean {
+    return proto3.util.equals(PreviewAuthorizationResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.GetAuthorizationEvaluationRequest
+ */
+export class GetAuthorizationEvaluationRequest extends Message<GetAuthorizationEvaluationRequest> {
+  /**
+   * @generated from field: string evaluation_id = 1;
+   */
+  evaluationId = "";
+
+  constructor(data?: PartialMessage<GetAuthorizationEvaluationRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.GetAuthorizationEvaluationRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "evaluation_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetAuthorizationEvaluationRequest {
+    return new GetAuthorizationEvaluationRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetAuthorizationEvaluationRequest {
+    return new GetAuthorizationEvaluationRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetAuthorizationEvaluationRequest {
+    return new GetAuthorizationEvaluationRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetAuthorizationEvaluationRequest | PlainMessage<GetAuthorizationEvaluationRequest> | undefined, b: GetAuthorizationEvaluationRequest | PlainMessage<GetAuthorizationEvaluationRequest> | undefined): boolean {
+    return proto3.util.equals(GetAuthorizationEvaluationRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.GetAuthorizationEvaluationResponse
+ */
+export class GetAuthorizationEvaluationResponse extends Message<GetAuthorizationEvaluationResponse> {
+  /**
+   * @generated from field: authz.v1.Evaluation evaluation = 1;
+   */
+  evaluation?: Evaluation;
+
+  constructor(data?: PartialMessage<GetAuthorizationEvaluationResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.GetAuthorizationEvaluationResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "evaluation", kind: "message", T: Evaluation },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetAuthorizationEvaluationResponse {
+    return new GetAuthorizationEvaluationResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetAuthorizationEvaluationResponse {
+    return new GetAuthorizationEvaluationResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetAuthorizationEvaluationResponse {
+    return new GetAuthorizationEvaluationResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetAuthorizationEvaluationResponse | PlainMessage<GetAuthorizationEvaluationResponse> | undefined, b: GetAuthorizationEvaluationResponse | PlainMessage<GetAuthorizationEvaluationResponse> | undefined): boolean {
+    return proto3.util.equals(GetAuthorizationEvaluationResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.GetEventRequest
+ */
+export class GetEventRequest extends Message<GetEventRequest> {
+  /**
+   * @generated from field: string event_id = 1;
+   */
+  eventId = "";
+
+  constructor(data?: PartialMessage<GetEventRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.GetEventRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "event_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetEventRequest {
+    return new GetEventRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetEventRequest {
+    return new GetEventRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetEventRequest {
+    return new GetEventRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetEventRequest | PlainMessage<GetEventRequest> | undefined, b: GetEventRequest | PlainMessage<GetEventRequest> | undefined): boolean {
+    return proto3.util.equals(GetEventRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.GetEventResponse
+ */
+export class GetEventResponse extends Message<GetEventResponse> {
+  /**
+   * @generated from field: authz.v1.Event event = 1;
+   */
+  event?: Event;
+
+  constructor(data?: PartialMessage<GetEventResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.GetEventResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "event", kind: "message", T: Event },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetEventResponse {
+    return new GetEventResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetEventResponse {
+    return new GetEventResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetEventResponse {
+    return new GetEventResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetEventResponse | PlainMessage<GetEventResponse> | undefined, b: GetEventResponse | PlainMessage<GetEventResponse> | undefined): boolean {
+    return proto3.util.equals(GetEventResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListEventsRequest
+ */
+export class ListEventsRequest extends Message<ListEventsRequest> {
+  constructor(data?: PartialMessage<ListEventsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListEventsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListEventsRequest {
+    return new ListEventsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListEventsRequest {
+    return new ListEventsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListEventsRequest {
+    return new ListEventsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListEventsRequest | PlainMessage<ListEventsRequest> | undefined, b: ListEventsRequest | PlainMessage<ListEventsRequest> | undefined): boolean {
+    return proto3.util.equals(ListEventsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListEventsResponse
+ */
+export class ListEventsResponse extends Message<ListEventsResponse> {
+  /**
+   * @generated from field: repeated authz.v1.Event events = 1;
+   */
+  events: Event[] = [];
+
+  constructor(data?: PartialMessage<ListEventsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListEventsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "events", kind: "message", T: Event, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListEventsResponse {
+    return new ListEventsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListEventsResponse {
+    return new ListEventsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListEventsResponse {
+    return new ListEventsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListEventsResponse | PlainMessage<ListEventsResponse> | undefined, b: ListEventsResponse | PlainMessage<ListEventsResponse> | undefined): boolean {
+    return proto3.util.equals(ListEventsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListAccessRequest
+ */
+export class ListAccessRequest extends Message<ListAccessRequest> {
+  constructor(data?: PartialMessage<ListAccessRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListAccessRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListAccessRequest {
+    return new ListAccessRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListAccessRequest {
+    return new ListAccessRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListAccessRequest {
+    return new ListAccessRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListAccessRequest | PlainMessage<ListAccessRequest> | undefined, b: ListAccessRequest | PlainMessage<ListAccessRequest> | undefined): boolean {
+    return proto3.util.equals(ListAccessRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListAccessResponse
+ */
+export class ListAccessResponse extends Message<ListAccessResponse> {
+  /**
+   * @generated from field: repeated authz.v1.Evaluation evaluations = 1;
+   */
+  evaluations: Evaluation[] = [];
+
+  constructor(data?: PartialMessage<ListAccessResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListAccessResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "evaluations", kind: "message", T: Evaluation, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListAccessResponse {
+    return new ListAccessResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListAccessResponse {
+    return new ListAccessResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListAccessResponse {
+    return new ListAccessResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListAccessResponse | PlainMessage<ListAccessResponse> | undefined, b: ListAccessResponse | PlainMessage<ListAccessResponse> | undefined): boolean {
+    return proto3.util.equals(ListAccessResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.Event
+ */
+export class Event extends Message<Event> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: authz.v1.HTTPOperation operation = 2;
+   */
+  operation?: HTTPOperation;
+
+  /**
+   * @generated from field: authz.v1.EID principal = 3;
+   */
+  principal?: EID;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp start_time = 4;
+   */
+  startTime?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp end_time = 5;
+   */
+  endTime?: Timestamp;
+
+  /**
+   * @generated from field: authz.v1.Decision decision = 6;
+   */
+  decision = Decision.UNSPECIFIED;
+
+  /**
+   * @generated from field: repeated authz.v1.Evaluation authz_evaluations = 7;
+   */
+  authzEvaluations: Evaluation[] = [];
+
+  constructor(data?: PartialMessage<Event>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.Event";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "operation", kind: "message", T: HTTPOperation },
+    { no: 3, name: "principal", kind: "message", T: EID },
+    { no: 4, name: "start_time", kind: "message", T: Timestamp },
+    { no: 5, name: "end_time", kind: "message", T: Timestamp },
+    { no: 6, name: "decision", kind: "enum", T: proto3.getEnumType(Decision) },
+    { no: 7, name: "authz_evaluations", kind: "message", T: Evaluation, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Event {
+    return new Event().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Event {
+    return new Event().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Event {
+    return new Event().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Event | PlainMessage<Event> | undefined, b: Event | PlainMessage<Event> | undefined): boolean {
+    return proto3.util.equals(Event, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.HTTPOperation
+ */
+export class HTTPOperation extends Message<HTTPOperation> {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name = "";
+
+  /**
+   * @generated from field: string method = 2;
+   */
+  method = "";
+
+  /**
+   * @generated from field: string path = 3;
+   */
+  path = "";
+
+  /**
+   * @generated from field: string host = 4;
+   */
+  host = "";
+
+  /**
+   * @generated from field: string scheme = 5;
+   */
+  scheme = "";
+
+  constructor(data?: PartialMessage<HTTPOperation>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.HTTPOperation";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "method", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "host", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "scheme", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): HTTPOperation {
+    return new HTTPOperation().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): HTTPOperation {
+    return new HTTPOperation().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): HTTPOperation {
+    return new HTTPOperation().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: HTTPOperation | PlainMessage<HTTPOperation> | undefined, b: HTTPOperation | PlainMessage<HTTPOperation> | undefined): boolean {
+    return proto3.util.equals(HTTPOperation, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListUsersRequest
+ */
+export class ListUsersRequest extends Message<ListUsersRequest> {
+  constructor(data?: PartialMessage<ListUsersRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListUsersRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListUsersRequest {
+    return new ListUsersRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListUsersRequest {
+    return new ListUsersRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListUsersRequest {
+    return new ListUsersRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListUsersRequest | PlainMessage<ListUsersRequest> | undefined, b: ListUsersRequest | PlainMessage<ListUsersRequest> | undefined): boolean {
+    return proto3.util.equals(ListUsersRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListUsersResponse
+ */
+export class ListUsersResponse extends Message<ListUsersResponse> {
+  /**
+   * @generated from field: repeated authz.v1.User users = 1;
+   */
+  users: User[] = [];
+
+  constructor(data?: PartialMessage<ListUsersResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListUsersResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "users", kind: "message", T: User, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListUsersResponse {
+    return new ListUsersResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListUsersResponse {
+    return new ListUsersResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListUsersResponse {
+    return new ListUsersResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListUsersResponse | PlainMessage<ListUsersResponse> | undefined, b: ListUsersResponse | PlainMessage<ListUsersResponse> | undefined): boolean {
+    return proto3.util.equals(ListUsersResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListReceiptsRequest
+ */
+export class ListReceiptsRequest extends Message<ListReceiptsRequest> {
+  constructor(data?: PartialMessage<ListReceiptsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListReceiptsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListReceiptsRequest {
+    return new ListReceiptsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListReceiptsRequest {
+    return new ListReceiptsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListReceiptsRequest {
+    return new ListReceiptsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListReceiptsRequest | PlainMessage<ListReceiptsRequest> | undefined, b: ListReceiptsRequest | PlainMessage<ListReceiptsRequest> | undefined): boolean {
+    return proto3.util.equals(ListReceiptsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListReceiptsResponse
+ */
+export class ListReceiptsResponse extends Message<ListReceiptsResponse> {
+  /**
+   * @generated from field: repeated authz.v1.Receipt receipts = 1;
+   */
+  receipts: Receipt[] = [];
+
+  constructor(data?: PartialMessage<ListReceiptsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListReceiptsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "receipts", kind: "message", T: Receipt, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListReceiptsResponse {
+    return new ListReceiptsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListReceiptsResponse {
+    return new ListReceiptsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListReceiptsResponse {
+    return new ListReceiptsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListReceiptsResponse | PlainMessage<ListReceiptsResponse> | undefined, b: ListReceiptsResponse | PlainMessage<ListReceiptsResponse> | undefined): boolean {
+    return proto3.util.equals(ListReceiptsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListS3ObjectsRequest
+ */
+export class ListS3ObjectsRequest extends Message<ListS3ObjectsRequest> {
+  constructor(data?: PartialMessage<ListS3ObjectsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListS3ObjectsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListS3ObjectsRequest {
+    return new ListS3ObjectsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListS3ObjectsRequest {
+    return new ListS3ObjectsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListS3ObjectsRequest {
+    return new ListS3ObjectsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListS3ObjectsRequest | PlainMessage<ListS3ObjectsRequest> | undefined, b: ListS3ObjectsRequest | PlainMessage<ListS3ObjectsRequest> | undefined): boolean {
+    return proto3.util.equals(ListS3ObjectsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.ListS3ObjectsResponse
+ */
+export class ListS3ObjectsResponse extends Message<ListS3ObjectsResponse> {
+  /**
+   * @generated from field: repeated authz.v1.S3Object objects = 1;
+   */
+  objects: S3Object[] = [];
+
+  constructor(data?: PartialMessage<ListS3ObjectsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.ListS3ObjectsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "objects", kind: "message", T: S3Object, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListS3ObjectsResponse {
+    return new ListS3ObjectsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListS3ObjectsResponse {
+    return new ListS3ObjectsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListS3ObjectsResponse {
+    return new ListS3ObjectsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListS3ObjectsResponse | PlainMessage<ListS3ObjectsResponse> | undefined, b: ListS3ObjectsResponse | PlainMessage<ListS3ObjectsResponse> | undefined): boolean {
+    return proto3.util.equals(ListS3ObjectsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.User
+ */
+export class User extends Message<User> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  constructor(data?: PartialMessage<User>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.User";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): User {
+    return new User().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): User {
+    return new User().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): User {
+    return new User().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: User | PlainMessage<User> | undefined, b: User | PlainMessage<User> | undefined): boolean {
+    return proto3.util.equals(User, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.Receipt
+ */
+export class Receipt extends Message<Receipt> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string owner = 2;
+   */
+  owner = "";
+
+  /**
+   * @generated from field: string category = 3;
+   */
+  category = "";
+
+  constructor(data?: PartialMessage<Receipt>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.Receipt";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "owner", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "category", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Receipt {
+    return new Receipt().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Receipt {
+    return new Receipt().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Receipt {
+    return new Receipt().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Receipt | PlainMessage<Receipt> | undefined, b: Receipt | PlainMessage<Receipt> | undefined): boolean {
+    return proto3.util.equals(Receipt, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.S3Object
+ */
+export class S3Object extends Message<S3Object> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string owner = 2;
+   */
+  owner = "";
+
+  constructor(data?: PartialMessage<S3Object>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.S3Object";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "owner", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): S3Object {
+    return new S3Object().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): S3Object {
+    return new S3Object().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): S3Object {
+    return new S3Object().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: S3Object | PlainMessage<S3Object> | undefined, b: S3Object | PlainMessage<S3Object> | undefined): boolean {
+    return proto3.util.equals(S3Object, a, b);
+  }
+}
 
 /**
  * @generated from message authz.v1.PreviewPolicyRequest
@@ -270,14 +1110,41 @@ export class Test extends Message<Test> {
  */
 export class Evaluation extends Message<Evaluation> {
   /**
-   * @generated from field: authz.v1.AuthzRequest request = 1;
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: authz.v1.AuthzRequest request = 2;
    */
   request?: AuthzRequest;
 
   /**
-   * @generated from field: authz.v1.Decision decision = 2;
+   * @generated from field: authz.v1.Decision decision = 3;
    */
   decision = Decision.UNSPECIFIED;
+
+  /**
+   * @generated from field: authz.v1.Diagnostics diagnostics = 4;
+   */
+  diagnostics?: Diagnostics;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp evaluated_at = 5;
+   */
+  evaluatedAt?: Timestamp;
+
+  /**
+   * the duration that it took to make the authorization decision
+   *
+   * @generated from field: google.protobuf.Duration evaluation_duration = 6;
+   */
+  evaluationDuration?: Duration;
+
+  /**
+   * @generated from field: authz.v1.DebugInformation debug_information = 7;
+   */
+  debugInformation?: DebugInformation;
 
   constructor(data?: PartialMessage<Evaluation>) {
     super();
@@ -287,8 +1154,13 @@ export class Evaluation extends Message<Evaluation> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "authz.v1.Evaluation";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "request", kind: "message", T: AuthzRequest },
-    { no: 2, name: "decision", kind: "enum", T: proto3.getEnumType(Decision) },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "request", kind: "message", T: AuthzRequest },
+    { no: 3, name: "decision", kind: "enum", T: proto3.getEnumType(Decision) },
+    { no: 4, name: "diagnostics", kind: "message", T: Diagnostics },
+    { no: 5, name: "evaluated_at", kind: "message", T: Timestamp },
+    { no: 6, name: "evaluation_duration", kind: "message", T: Duration },
+    { no: 7, name: "debug_information", kind: "message", T: DebugInformation },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Evaluation {
@@ -305,6 +1177,268 @@ export class Evaluation extends Message<Evaluation> {
 
   static equals(a: Evaluation | PlainMessage<Evaluation> | undefined, b: Evaluation | PlainMessage<Evaluation> | undefined): boolean {
     return proto3.util.equals(Evaluation, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.DebugInformation
+ */
+export class DebugInformation extends Message<DebugInformation> {
+  /**
+   * PolicySets which contributed to the authorization decision.
+   *
+   * @generated from field: repeated authz.v1.PolicySet policy_sets = 1;
+   */
+  policySets: PolicySet[] = [];
+
+  /**
+   * Entities which contributed to the authorization decision.
+   * Serialized as JSON strings.
+   *
+   * @generated from field: string principal_json = 2;
+   */
+  principalJson = "";
+
+  /**
+   * @generated from field: string resource_json = 3;
+   */
+  resourceJson = "";
+
+  constructor(data?: PartialMessage<DebugInformation>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.DebugInformation";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "policy_sets", kind: "message", T: PolicySet, repeated: true },
+    { no: 2, name: "principal_json", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "resource_json", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DebugInformation {
+    return new DebugInformation().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): DebugInformation {
+    return new DebugInformation().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): DebugInformation {
+    return new DebugInformation().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: DebugInformation | PlainMessage<DebugInformation> | undefined, b: DebugInformation | PlainMessage<DebugInformation> | undefined): boolean {
+    return proto3.util.equals(DebugInformation, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.Diagnostics
+ */
+export class Diagnostics extends Message<Diagnostics> {
+  /**
+   * @generated from field: repeated string reason = 1;
+   */
+  reason: string[] = [];
+
+  /**
+   * @generated from field: repeated string errors = 2;
+   */
+  errors: string[] = [];
+
+  /**
+   * @generated from field: repeated authz.v1.Annotation annotations = 3;
+   */
+  annotations: Annotation[] = [];
+
+  constructor(data?: PartialMessage<Diagnostics>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.Diagnostics";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "reason", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 2, name: "errors", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 3, name: "annotations", kind: "message", T: Annotation, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Diagnostics {
+    return new Diagnostics().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Diagnostics {
+    return new Diagnostics().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Diagnostics {
+    return new Diagnostics().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Diagnostics | PlainMessage<Diagnostics> | undefined, b: Diagnostics | PlainMessage<Diagnostics> | undefined): boolean {
+    return proto3.util.equals(Diagnostics, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.Annotation
+ */
+export class Annotation extends Message<Annotation> {
+  /**
+   * the ID of the policy with the annotation
+   *
+   * @generated from field: string policy_id = 1;
+   */
+  policyId = "";
+
+  /**
+   * the key of the annotation. e.g. in @advice("something")
+   * it is 'advice'.
+   *
+   * @generated from field: string key = 2;
+   */
+  key = "";
+
+  /**
+   * the value of the annotation. e.g. in @advice("something")
+   * it is 'something'
+   *
+   * @generated from field: string value = 3;
+   */
+  value = "";
+
+  constructor(data?: PartialMessage<Annotation>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.Annotation";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "policy_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "key", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "value", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Annotation {
+    return new Annotation().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Annotation {
+    return new Annotation().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Annotation {
+    return new Annotation().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Annotation | PlainMessage<Annotation> | undefined, b: Annotation | PlainMessage<Annotation> | undefined): boolean {
+    return proto3.util.equals(Annotation, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.Policy
+ */
+export class Policy extends Message<Policy> {
+  /**
+   * ID of the policy.
+   *
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * Cedar code for the policy set.
+   *
+   * @generated from field: string text = 2;
+   */
+  text = "";
+
+  constructor(data?: PartialMessage<Policy>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.Policy";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Policy {
+    return new Policy().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Policy {
+    return new Policy().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Policy {
+    return new Policy().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Policy | PlainMessage<Policy> | undefined, b: Policy | PlainMessage<Policy> | undefined): boolean {
+    return proto3.util.equals(Policy, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.PolicySet
+ */
+export class PolicySet extends Message<PolicySet> {
+  /**
+   * ID of the policy set.
+   *
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * The policies contained in the policy set.
+   *
+   * @generated from field: repeated authz.v1.Policy policies = 2;
+   */
+  policies: Policy[] = [];
+
+  /**
+   * The source code for the policy set.
+   *
+   * @generated from field: string text = 3;
+   */
+  text = "";
+
+  constructor(data?: PartialMessage<PolicySet>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.PolicySet";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "policies", kind: "message", T: Policy, repeated: true },
+    { no: 3, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PolicySet {
+    return new PolicySet().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): PolicySet {
+    return new PolicySet().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): PolicySet {
+    return new PolicySet().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: PolicySet | PlainMessage<PolicySet> | undefined, b: PolicySet | PlainMessage<PolicySet> | undefined): boolean {
+    return proto3.util.equals(PolicySet, a, b);
   }
 }
 

@@ -33,6 +33,23 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// AuthzServiceGetPolicyProcedure is the fully-qualified name of the AuthzService's GetPolicy RPC.
+	AuthzServiceGetPolicyProcedure = "/authz.v1.AuthzService/GetPolicy"
+	// AuthzServiceUpdatePolicyProcedure is the fully-qualified name of the AuthzService's UpdatePolicy
+	// RPC.
+	AuthzServiceUpdatePolicyProcedure = "/authz.v1.AuthzService/UpdatePolicy"
+	// AuthzServicePreviewAuthorizationProcedure is the fully-qualified name of the AuthzService's
+	// PreviewAuthorization RPC.
+	AuthzServicePreviewAuthorizationProcedure = "/authz.v1.AuthzService/PreviewAuthorization"
+	// AuthzServiceListAccessProcedure is the fully-qualified name of the AuthzService's ListAccess RPC.
+	AuthzServiceListAccessProcedure = "/authz.v1.AuthzService/ListAccess"
+	// AuthzServiceListEventsProcedure is the fully-qualified name of the AuthzService's ListEvents RPC.
+	AuthzServiceListEventsProcedure = "/authz.v1.AuthzService/ListEvents"
+	// AuthzServiceGetEventProcedure is the fully-qualified name of the AuthzService's GetEvent RPC.
+	AuthzServiceGetEventProcedure = "/authz.v1.AuthzService/GetEvent"
+	// AuthzServiceGetAuthorizationEvaluationProcedure is the fully-qualified name of the AuthzService's
+	// GetAuthorizationEvaluation RPC.
+	AuthzServiceGetAuthorizationEvaluationProcedure = "/authz.v1.AuthzService/GetAuthorizationEvaluation"
 	// AuthzServicePreviewPolicyProcedure is the fully-qualified name of the AuthzService's
 	// PreviewPolicy RPC.
 	AuthzServicePreviewPolicyProcedure = "/authz.v1.AuthzService/PreviewPolicy"
@@ -48,15 +65,29 @@ const (
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	authzServiceServiceDescriptor             = v1.File_authz_v1_authz_proto.Services().ByName("AuthzService")
-	authzServicePreviewPolicyMethodDescriptor = authzServiceServiceDescriptor.Methods().ByName("PreviewPolicy")
-	authzServiceListUsersMethodDescriptor     = authzServiceServiceDescriptor.Methods().ByName("ListUsers")
-	authzServiceListReceiptsMethodDescriptor  = authzServiceServiceDescriptor.Methods().ByName("ListReceipts")
-	authzServiceListS3ObjectsMethodDescriptor = authzServiceServiceDescriptor.Methods().ByName("ListS3Objects")
+	authzServiceServiceDescriptor                          = v1.File_authz_v1_authz_proto.Services().ByName("AuthzService")
+	authzServiceGetPolicyMethodDescriptor                  = authzServiceServiceDescriptor.Methods().ByName("GetPolicy")
+	authzServiceUpdatePolicyMethodDescriptor               = authzServiceServiceDescriptor.Methods().ByName("UpdatePolicy")
+	authzServicePreviewAuthorizationMethodDescriptor       = authzServiceServiceDescriptor.Methods().ByName("PreviewAuthorization")
+	authzServiceListAccessMethodDescriptor                 = authzServiceServiceDescriptor.Methods().ByName("ListAccess")
+	authzServiceListEventsMethodDescriptor                 = authzServiceServiceDescriptor.Methods().ByName("ListEvents")
+	authzServiceGetEventMethodDescriptor                   = authzServiceServiceDescriptor.Methods().ByName("GetEvent")
+	authzServiceGetAuthorizationEvaluationMethodDescriptor = authzServiceServiceDescriptor.Methods().ByName("GetAuthorizationEvaluation")
+	authzServicePreviewPolicyMethodDescriptor              = authzServiceServiceDescriptor.Methods().ByName("PreviewPolicy")
+	authzServiceListUsersMethodDescriptor                  = authzServiceServiceDescriptor.Methods().ByName("ListUsers")
+	authzServiceListReceiptsMethodDescriptor               = authzServiceServiceDescriptor.Methods().ByName("ListReceipts")
+	authzServiceListS3ObjectsMethodDescriptor              = authzServiceServiceDescriptor.Methods().ByName("ListS3Objects")
 )
 
 // AuthzServiceClient is a client for the authz.v1.AuthzService service.
 type AuthzServiceClient interface {
+	GetPolicy(context.Context, *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error)
+	UpdatePolicy(context.Context, *connect.Request[v1.UpdatePolicyRequest]) (*connect.Response[v1.UpdatePolicyResponse], error)
+	PreviewAuthorization(context.Context, *connect.Request[v1.PreviewAuthorizationRequest]) (*connect.Response[v1.PreviewAuthorizationResponse], error)
+	ListAccess(context.Context, *connect.Request[v1.ListAccessRequest]) (*connect.Response[v1.ListAccessResponse], error)
+	ListEvents(context.Context, *connect.Request[v1.ListEventsRequest]) (*connect.Response[v1.ListEventsResponse], error)
+	GetEvent(context.Context, *connect.Request[v1.GetEventRequest]) (*connect.Response[v1.GetEventResponse], error)
+	GetAuthorizationEvaluation(context.Context, *connect.Request[v1.GetAuthorizationEvaluationRequest]) (*connect.Response[v1.GetAuthorizationEvaluationResponse], error)
 	PreviewPolicy(context.Context, *connect.Request[v1.PreviewPolicyRequest]) (*connect.Response[v1.PreviewPolicyResponse], error)
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
 	ListReceipts(context.Context, *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error)
@@ -73,6 +104,48 @@ type AuthzServiceClient interface {
 func NewAuthzServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AuthzServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &authzServiceClient{
+		getPolicy: connect.NewClient[v1.GetPolicyRequest, v1.GetPolicyResponse](
+			httpClient,
+			baseURL+AuthzServiceGetPolicyProcedure,
+			connect.WithSchema(authzServiceGetPolicyMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		updatePolicy: connect.NewClient[v1.UpdatePolicyRequest, v1.UpdatePolicyResponse](
+			httpClient,
+			baseURL+AuthzServiceUpdatePolicyProcedure,
+			connect.WithSchema(authzServiceUpdatePolicyMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		previewAuthorization: connect.NewClient[v1.PreviewAuthorizationRequest, v1.PreviewAuthorizationResponse](
+			httpClient,
+			baseURL+AuthzServicePreviewAuthorizationProcedure,
+			connect.WithSchema(authzServicePreviewAuthorizationMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		listAccess: connect.NewClient[v1.ListAccessRequest, v1.ListAccessResponse](
+			httpClient,
+			baseURL+AuthzServiceListAccessProcedure,
+			connect.WithSchema(authzServiceListAccessMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		listEvents: connect.NewClient[v1.ListEventsRequest, v1.ListEventsResponse](
+			httpClient,
+			baseURL+AuthzServiceListEventsProcedure,
+			connect.WithSchema(authzServiceListEventsMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		getEvent: connect.NewClient[v1.GetEventRequest, v1.GetEventResponse](
+			httpClient,
+			baseURL+AuthzServiceGetEventProcedure,
+			connect.WithSchema(authzServiceGetEventMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		getAuthorizationEvaluation: connect.NewClient[v1.GetAuthorizationEvaluationRequest, v1.GetAuthorizationEvaluationResponse](
+			httpClient,
+			baseURL+AuthzServiceGetAuthorizationEvaluationProcedure,
+			connect.WithSchema(authzServiceGetAuthorizationEvaluationMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 		previewPolicy: connect.NewClient[v1.PreviewPolicyRequest, v1.PreviewPolicyResponse](
 			httpClient,
 			baseURL+AuthzServicePreviewPolicyProcedure,
@@ -102,10 +175,52 @@ func NewAuthzServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // authzServiceClient implements AuthzServiceClient.
 type authzServiceClient struct {
-	previewPolicy *connect.Client[v1.PreviewPolicyRequest, v1.PreviewPolicyResponse]
-	listUsers     *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
-	listReceipts  *connect.Client[v1.ListReceiptsRequest, v1.ListReceiptsResponse]
-	listS3Objects *connect.Client[v1.ListS3ObjectsRequest, v1.ListS3ObjectsResponse]
+	getPolicy                  *connect.Client[v1.GetPolicyRequest, v1.GetPolicyResponse]
+	updatePolicy               *connect.Client[v1.UpdatePolicyRequest, v1.UpdatePolicyResponse]
+	previewAuthorization       *connect.Client[v1.PreviewAuthorizationRequest, v1.PreviewAuthorizationResponse]
+	listAccess                 *connect.Client[v1.ListAccessRequest, v1.ListAccessResponse]
+	listEvents                 *connect.Client[v1.ListEventsRequest, v1.ListEventsResponse]
+	getEvent                   *connect.Client[v1.GetEventRequest, v1.GetEventResponse]
+	getAuthorizationEvaluation *connect.Client[v1.GetAuthorizationEvaluationRequest, v1.GetAuthorizationEvaluationResponse]
+	previewPolicy              *connect.Client[v1.PreviewPolicyRequest, v1.PreviewPolicyResponse]
+	listUsers                  *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
+	listReceipts               *connect.Client[v1.ListReceiptsRequest, v1.ListReceiptsResponse]
+	listS3Objects              *connect.Client[v1.ListS3ObjectsRequest, v1.ListS3ObjectsResponse]
+}
+
+// GetPolicy calls authz.v1.AuthzService.GetPolicy.
+func (c *authzServiceClient) GetPolicy(ctx context.Context, req *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error) {
+	return c.getPolicy.CallUnary(ctx, req)
+}
+
+// UpdatePolicy calls authz.v1.AuthzService.UpdatePolicy.
+func (c *authzServiceClient) UpdatePolicy(ctx context.Context, req *connect.Request[v1.UpdatePolicyRequest]) (*connect.Response[v1.UpdatePolicyResponse], error) {
+	return c.updatePolicy.CallUnary(ctx, req)
+}
+
+// PreviewAuthorization calls authz.v1.AuthzService.PreviewAuthorization.
+func (c *authzServiceClient) PreviewAuthorization(ctx context.Context, req *connect.Request[v1.PreviewAuthorizationRequest]) (*connect.Response[v1.PreviewAuthorizationResponse], error) {
+	return c.previewAuthorization.CallUnary(ctx, req)
+}
+
+// ListAccess calls authz.v1.AuthzService.ListAccess.
+func (c *authzServiceClient) ListAccess(ctx context.Context, req *connect.Request[v1.ListAccessRequest]) (*connect.Response[v1.ListAccessResponse], error) {
+	return c.listAccess.CallUnary(ctx, req)
+}
+
+// ListEvents calls authz.v1.AuthzService.ListEvents.
+func (c *authzServiceClient) ListEvents(ctx context.Context, req *connect.Request[v1.ListEventsRequest]) (*connect.Response[v1.ListEventsResponse], error) {
+	return c.listEvents.CallUnary(ctx, req)
+}
+
+// GetEvent calls authz.v1.AuthzService.GetEvent.
+func (c *authzServiceClient) GetEvent(ctx context.Context, req *connect.Request[v1.GetEventRequest]) (*connect.Response[v1.GetEventResponse], error) {
+	return c.getEvent.CallUnary(ctx, req)
+}
+
+// GetAuthorizationEvaluation calls authz.v1.AuthzService.GetAuthorizationEvaluation.
+func (c *authzServiceClient) GetAuthorizationEvaluation(ctx context.Context, req *connect.Request[v1.GetAuthorizationEvaluationRequest]) (*connect.Response[v1.GetAuthorizationEvaluationResponse], error) {
+	return c.getAuthorizationEvaluation.CallUnary(ctx, req)
 }
 
 // PreviewPolicy calls authz.v1.AuthzService.PreviewPolicy.
@@ -130,6 +245,13 @@ func (c *authzServiceClient) ListS3Objects(ctx context.Context, req *connect.Req
 
 // AuthzServiceHandler is an implementation of the authz.v1.AuthzService service.
 type AuthzServiceHandler interface {
+	GetPolicy(context.Context, *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error)
+	UpdatePolicy(context.Context, *connect.Request[v1.UpdatePolicyRequest]) (*connect.Response[v1.UpdatePolicyResponse], error)
+	PreviewAuthorization(context.Context, *connect.Request[v1.PreviewAuthorizationRequest]) (*connect.Response[v1.PreviewAuthorizationResponse], error)
+	ListAccess(context.Context, *connect.Request[v1.ListAccessRequest]) (*connect.Response[v1.ListAccessResponse], error)
+	ListEvents(context.Context, *connect.Request[v1.ListEventsRequest]) (*connect.Response[v1.ListEventsResponse], error)
+	GetEvent(context.Context, *connect.Request[v1.GetEventRequest]) (*connect.Response[v1.GetEventResponse], error)
+	GetAuthorizationEvaluation(context.Context, *connect.Request[v1.GetAuthorizationEvaluationRequest]) (*connect.Response[v1.GetAuthorizationEvaluationResponse], error)
 	PreviewPolicy(context.Context, *connect.Request[v1.PreviewPolicyRequest]) (*connect.Response[v1.PreviewPolicyResponse], error)
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
 	ListReceipts(context.Context, *connect.Request[v1.ListReceiptsRequest]) (*connect.Response[v1.ListReceiptsResponse], error)
@@ -142,6 +264,48 @@ type AuthzServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	authzServiceGetPolicyHandler := connect.NewUnaryHandler(
+		AuthzServiceGetPolicyProcedure,
+		svc.GetPolicy,
+		connect.WithSchema(authzServiceGetPolicyMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServiceUpdatePolicyHandler := connect.NewUnaryHandler(
+		AuthzServiceUpdatePolicyProcedure,
+		svc.UpdatePolicy,
+		connect.WithSchema(authzServiceUpdatePolicyMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServicePreviewAuthorizationHandler := connect.NewUnaryHandler(
+		AuthzServicePreviewAuthorizationProcedure,
+		svc.PreviewAuthorization,
+		connect.WithSchema(authzServicePreviewAuthorizationMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServiceListAccessHandler := connect.NewUnaryHandler(
+		AuthzServiceListAccessProcedure,
+		svc.ListAccess,
+		connect.WithSchema(authzServiceListAccessMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServiceListEventsHandler := connect.NewUnaryHandler(
+		AuthzServiceListEventsProcedure,
+		svc.ListEvents,
+		connect.WithSchema(authzServiceListEventsMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServiceGetEventHandler := connect.NewUnaryHandler(
+		AuthzServiceGetEventProcedure,
+		svc.GetEvent,
+		connect.WithSchema(authzServiceGetEventMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	authzServiceGetAuthorizationEvaluationHandler := connect.NewUnaryHandler(
+		AuthzServiceGetAuthorizationEvaluationProcedure,
+		svc.GetAuthorizationEvaluation,
+		connect.WithSchema(authzServiceGetAuthorizationEvaluationMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	authzServicePreviewPolicyHandler := connect.NewUnaryHandler(
 		AuthzServicePreviewPolicyProcedure,
 		svc.PreviewPolicy,
@@ -168,6 +332,20 @@ func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOpti
 	)
 	return "/authz.v1.AuthzService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case AuthzServiceGetPolicyProcedure:
+			authzServiceGetPolicyHandler.ServeHTTP(w, r)
+		case AuthzServiceUpdatePolicyProcedure:
+			authzServiceUpdatePolicyHandler.ServeHTTP(w, r)
+		case AuthzServicePreviewAuthorizationProcedure:
+			authzServicePreviewAuthorizationHandler.ServeHTTP(w, r)
+		case AuthzServiceListAccessProcedure:
+			authzServiceListAccessHandler.ServeHTTP(w, r)
+		case AuthzServiceListEventsProcedure:
+			authzServiceListEventsHandler.ServeHTTP(w, r)
+		case AuthzServiceGetEventProcedure:
+			authzServiceGetEventHandler.ServeHTTP(w, r)
+		case AuthzServiceGetAuthorizationEvaluationProcedure:
+			authzServiceGetAuthorizationEvaluationHandler.ServeHTTP(w, r)
 		case AuthzServicePreviewPolicyProcedure:
 			authzServicePreviewPolicyHandler.ServeHTTP(w, r)
 		case AuthzServiceListUsersProcedure:
@@ -184,6 +362,34 @@ func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOpti
 
 // UnimplementedAuthzServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedAuthzServiceHandler struct{}
+
+func (UnimplementedAuthzServiceHandler) GetPolicy(context.Context, *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.GetPolicy is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) UpdatePolicy(context.Context, *connect.Request[v1.UpdatePolicyRequest]) (*connect.Response[v1.UpdatePolicyResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.UpdatePolicy is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) PreviewAuthorization(context.Context, *connect.Request[v1.PreviewAuthorizationRequest]) (*connect.Response[v1.PreviewAuthorizationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.PreviewAuthorization is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) ListAccess(context.Context, *connect.Request[v1.ListAccessRequest]) (*connect.Response[v1.ListAccessResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.ListAccess is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) ListEvents(context.Context, *connect.Request[v1.ListEventsRequest]) (*connect.Response[v1.ListEventsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.ListEvents is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) GetEvent(context.Context, *connect.Request[v1.GetEventRequest]) (*connect.Response[v1.GetEventResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.GetEvent is not implemented"))
+}
+
+func (UnimplementedAuthzServiceHandler) GetAuthorizationEvaluation(context.Context, *connect.Request[v1.GetAuthorizationEvaluationRequest]) (*connect.Response[v1.GetAuthorizationEvaluationResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.GetAuthorizationEvaluation is not implemented"))
+}
 
 func (UnimplementedAuthzServiceHandler) PreviewPolicy(context.Context, *connect.Request[v1.PreviewPolicyRequest]) (*connect.Response[v1.PreviewPolicyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.PreviewPolicy is not implemented"))

@@ -2,12 +2,96 @@ syntax = "proto3";
 
 package authz.v1;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
 service AuthzService {
+    rpc GetPolicy(GetPolicyRequest) returns (GetPolicyResponse) {}
+    rpc UpdatePolicy(UpdatePolicyRequest) returns (UpdatePolicyResponse) {}
+    rpc PreviewAuthorization(PreviewAuthorizationRequest) returns (PreviewAuthorizationResponse) {}
+    rpc ListAccess(ListAccessRequest) returns (ListAccessResponse) {}
+    rpc ListEvents(ListEventsRequest) returns (ListEventsResponse) {}
+    rpc GetEvent(GetEventRequest) returns (GetEventResponse) {}
+    rpc GetAuthorizationEvaluation(GetAuthorizationEvaluationRequest) returns (GetAuthorizationEvaluationResponse) {}
     rpc PreviewPolicy(PreviewPolicyRequest) returns (PreviewPolicyResponse) {}
 
     rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {}
     rpc ListReceipts(ListReceiptsRequest) returns (ListReceiptsResponse) {}
     rpc ListS3Objects(ListS3ObjectsRequest) returns (ListS3ObjectsResponse) {}
+}
+
+message GetPolicyRequest {}
+
+message GetPolicyResponse {
+    string cedar_policy_text = 1;
+}
+
+message UpdatePolicyRequest {
+    string cedar_policy_text = 1;
+}
+
+message UpdatePolicyResponse {
+    string cedar_policy_text = 1;
+}
+
+message PreviewAuthorizationRequest {
+    AuthzRequest request = 1;
+    // Optionally provide a Cedar policy.
+    // If not provided, will default to the current policyset.
+    string cedar_policy_text = 2;
+    bool use_custom_policy_text = 3;
+}
+
+message PreviewAuthorizationResponse {
+    Evaluation evaluation = 1;
+}
+
+message GetAuthorizationEvaluationRequest {
+    string evaluation_id = 1;
+}
+
+message GetAuthorizationEvaluationResponse {
+    Evaluation evaluation = 1;
+}
+
+message GetEventRequest {
+    string event_id = 1;
+}
+
+message GetEventResponse {
+    Event event = 1;
+}
+
+message ListEventsRequest {}
+
+message ListEventsResponse {
+    repeated Event events = 1;
+}
+
+
+message ListAccessRequest {}
+
+message ListAccessResponse {
+    repeated Evaluation evaluations = 1;
+}
+
+message Event {
+    string id = 1;
+    HTTPOperation operation = 2;
+    EID principal = 3;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp end_time = 5;
+    Decision decision = 6;
+
+    repeated Evaluation authz_evaluations = 7;
+}
+
+message HTTPOperation {
+    string name = 1;
+    string method = 2;
+    string path = 3;
+    string host = 4;
+    string scheme = 5;
 }
 
 message ListUsersRequest {}
@@ -73,12 +157,67 @@ message Test {
 }
 
 message Evaluation {
-    AuthzRequest request = 1;
-    Decision decision = 2;
+    string id = 1;
+    AuthzRequest request = 2;
+    Decision decision = 3;
+    Diagnostics diagnostics = 4;
+
+    google.protobuf.Timestamp evaluated_at = 5;
+
+    // the duration that it took to make the authorization decision
+    google.protobuf.Duration evaluation_duration = 6;
+
+    DebugInformation debug_information = 7;
+}
+
+message DebugInformation {
+    // PolicySets which contributed to the authorization decision.
+    repeated PolicySet policy_sets = 1;
+
+    // Entities which contributed to the authorization decision.
+    // Serialized as JSON strings.
+    string principal_json = 2;
+    string resource_json = 3;
+}
+
+message Diagnostics {
+    repeated string reason = 1;
+    repeated string errors = 2;
+    repeated Annotation annotations = 3;
+}
+
+message Annotation {
+    // the ID of the policy with the annotation
+    string policy_id = 1;
+    // the key of the annotation. e.g. in @advice("something")
+    // it is 'advice'.
+    string key = 2;
+    // the value of the annotation. e.g. in @advice("something")
+    // it is 'something'
+    string value = 3;
 }
 
 enum Decision {
     DECISION_UNSPECIFIED = 0;
     DECISION_ALLOW = 1;
     DECISION_DENY = 2;
+}
+
+message Policy {
+    // ID of the policy.
+    string id = 1;
+
+    // Cedar code for the policy set.
+    string text = 2;
+}
+
+message PolicySet {
+    // ID of the policy set.
+    string id = 1;
+
+    // The policies contained in the policy set.
+    repeated Policy policies = 2;
+
+    // The source code for the policy set.
+    string text = 3;
 }

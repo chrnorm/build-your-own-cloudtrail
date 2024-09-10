@@ -1,15 +1,11 @@
 import { Box, Flex, HStack, Text, Link } from "@chakra-ui/react";
 import React from "react";
-import { Link as ReactRouterLink } from "react-router-dom";
+import { NavLink, Outlet, Link as ReactRouterLink } from "react-router-dom";
 import { CommonFateLightLogo } from "./Logos";
 
-interface Props {
-  children?: React.ReactNode;
-}
-
-export const Layout: React.FC<Props> = ({ children }) => {
+export const Layout: React.FC = () => {
   return (
-    <Flex bg="#0d1116" h="100vh">
+    <Flex bg="#0d1116" minH="100vh">
       <Flex
         w="100%"
         as="nav"
@@ -28,6 +24,50 @@ export const Layout: React.FC<Props> = ({ children }) => {
             <Text whiteSpace={"nowrap"} textStyle={"Body/Small"} fontSize="sm">
               Build-Your-Own-CloudTrail
             </Text>
+          </HStack>
+          <HStack spacing={4}>
+            <Link
+              as={NavLink}
+              to="/events"
+              color="white"
+              _activeLink={{
+                fontWeight: "bold",
+              }}
+            >
+              Events
+            </Link>
+            <Link
+              as={NavLink}
+              to="/access"
+              color="white"
+              _activeLink={{
+                fontWeight: "bold",
+              }}
+            >
+              Access
+            </Link>
+            <Link
+              as={NavLink}
+              to="/"
+              color="white"
+              _activeLink={{
+                fontWeight: "bold",
+              }}
+            >
+              Policies
+            </Link>
+
+            <Link
+              as={NavLink}
+              to="/resources"
+              color="white"
+              fontWeight="medium"
+              _activeLink={{
+                fontWeight: "bold",
+              }}
+            >
+              Resources
+            </Link>
           </HStack>
         </HStack>
         <HStack spacing={3}>
@@ -60,7 +100,7 @@ export const Layout: React.FC<Props> = ({ children }) => {
         </HStack>
       </Flex>
       <Box pt="60px" w="100%">
-        {children}
+        <Outlet />
       </Box>
     </Flex>
   );

@@ -2,7 +2,6 @@ import React, { useMemo, useRef, useState } from "react";
 import CodeMirror, { keymap, ViewUpdate } from "@uiw/react-codemirror";
 import { cedar } from "codemirror-lang-cedar";
 import { githubDark } from "@uiw/codemirror-theme-github";
-import { Layout } from "./components/Layout";
 import { Allotment, AllotmentHandle } from "allotment";
 import "allotment/dist/style.css";
 import {
@@ -12,6 +11,7 @@ import {
   Badge,
   Box,
   Flex,
+  useDisclosure,
   HStack,
   IconButton,
   Spacer,
@@ -24,6 +24,12 @@ import {
   Th,
   Thead,
   Tr,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  DrawerHeader,
+  DrawerBody,
 } from "@chakra-ui/react";
 import {
   CheckCircleIcon,
@@ -42,9 +48,11 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMutation } from "@connectrpc/connect-query";
-import { previewPolicy } from "./gen/authz/v1/authz-AuthzService_connectquery";
-import { Decision, PreviewPolicyResponse } from "./gen/authz/v1/authz_pb";
+import { previewPolicy } from "../gen/authz/v1/authz-AuthzService_connectquery";
+import { Decision } from "../gen/authz/v1/authz_pb";
 import { ConnectError } from "@connectrpc/connect";
+import { useNavigate } from "react-router-dom";
+import { AccessPreview } from "../components/AccessPreview";
 
 const customKeymap = keymap.of([
   {
@@ -58,7 +66,7 @@ const customKeymap = keymap.of([
   },
 ]);
 
-function App() {
+function PoliciesPage() {
   const previewPolicyMutation = useMutation(previewPolicy);
 
   const [changes, setChanges] = useState<Evaluation[]>([]);
@@ -69,8 +77,11 @@ function App() {
     "permit (principal, action, resource);",
   );
 
+  const [selectedEval, setSelectedEval] = useState<Evaluation>();
+
   const onChange = React.useCallback(
-    async (val: string, viewUpdate: ViewUpdate) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (val: string, _viewUpdate: ViewUpdate) => {
       setValue(val);
 
       try {
@@ -151,7 +162,7 @@ function App() {
   };
 
   return (
-    <Layout>
+    <>
       <Flex w="100%" maxW="100vw" h="calc(100vh - 60px)">
         <Allotment defaultSizes={[35, 65]}>
           <Allotment
@@ -215,7 +226,12 @@ function App() {
                 />
               </Flex>
               <Flex px={3}>
-                <PermissionChangeTable evals={changes} />
+                <PermissionChangeTable
+                  evals={changes}
+                  onSelect={(evaluation) => {
+                    setSelectedEval(evaluation);
+                  }}
+                />
               </Flex>
             </Stack>
             <CollapsePanel
@@ -237,7 +253,28 @@ function App() {
           </Allotment>
         </Allotment>
       </Flex>
-    </Layout>
+      <Drawer
+        isOpen={selectedEval !== undefined}
+        placement="right"
+        onClose={() => setSelectedEval(undefined)}
+        size="xl"
+      >
+        <DrawerOverlay />
+        <DrawerContent bg="#0d1116">
+          <DrawerCloseButton />
+          <DrawerHeader>Debug Authorization</DrawerHeader>
+
+          <DrawerBody>
+            {selectedEval !== undefined && (
+              <AccessPreview
+                request={selectedEval.request}
+                cedarPolicyText={value}
+              />
+            )}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 }
 
@@ -357,6 +394,7 @@ const TestResult: React.FC<TestResultProps> = ({ test }) => {
 
 interface PermissionChangeTableProps {
   evals: Evaluation[];
+  onSelect: (evaluation: Evaluation) => void;
 }
 
 interface EID {
@@ -379,6 +417,7 @@ const formatEID = (eid: EID) => `${eid.type}::"${eid.id}"`;
 
 const PermissionChangeTable: React.FC<PermissionChangeTableProps> = ({
   evals,
+  onSelect,
 }) => {
   const columnHelper = createColumnHelper<Evaluation>();
 
@@ -445,7 +484,17 @@ const PermissionChangeTable: React.FC<PermissionChangeTableProps> = ({
         </Thead>
         <Tbody>
           {table.getRowModel().rows.map((row) => (
-            <Tr borderBottomWidth={"1px"} key={row.id}>
+            <Tr
+              borderBottomWidth={"1px"}
+              key={row.id}
+              cursor={"pointer"}
+              onClick={
+                () => onSelect(row.original)
+                // navigate(
+                //   `/access/preview?principalType=${row.original.request?.principal?.type}&principalId=${row.original.request?.principal?.id}&actionType=${row.original.request?.action?.type}&actionId=${row.original.request?.action?.id}&resourceType=${row.original.request?.resource?.type}&resourceId=${row.original.request?.resource?.id}&useCustomPolicyText=true&cedarPolicyText=${cedarPolicyText}`,
+                // )
+              }
+            >
               {row.getVisibleCells().map((cell) => (
                 <Td
                   key={cell.id}
@@ -517,4 +566,4 @@ const DiffStat: React.FC<DiffStatProps> = ({ added, removed }) => {
   );
 };
 
-export default App;
+export default PoliciesPage;

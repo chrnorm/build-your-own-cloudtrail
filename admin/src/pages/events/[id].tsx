@@ -17,6 +17,8 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { useQuery } from "@connectrpc/connect-query";
+import CodeMirror, { EditorView } from "@uiw/react-codemirror";
+import { json } from "@codemirror/lang-json";
 import {
   Link as ReactRouterLink,
   useNavigate,
@@ -26,7 +28,7 @@ import { getEvent } from "../../gen/authz/v1/authz-AuthzService_connectquery";
 import { UserIcon } from "../../components/Logos";
 import { RepeatClockIcon } from "@chakra-ui/icons";
 import { Timestamp } from "@bufbuild/protobuf";
-import { Decision, Evaluation } from "../../gen/authz/v1/authz_pb";
+import { Decision, Evaluation, Event } from "../../gen/authz/v1/authz_pb";
 import { formatEID } from "../../eid";
 import {
   createColumnHelper,
@@ -35,6 +37,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { githubDark } from "@uiw/codemirror-theme-github";
 
 const formatDate = (date: Timestamp | undefined) => {
   if (date === undefined) return "";
@@ -50,6 +53,32 @@ const formatDate = (date: Timestamp | undefined) => {
   });
 };
 
+const renderEvent = (event: Event | undefined) => {
+  if (event === undefined) {
+    return "";
+  }
+
+  const decision = event.decision === Decision.ALLOW ? "allow" : "deny";
+
+  const { authzEvaluations, ...otherFields } = event;
+
+  return JSON.stringify(
+    {
+      ...otherFields,
+      decision,
+      authorizations: authzEvaluations.map(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        ({ debugInformation, ...rest }) => ({
+          ...rest,
+          decision: rest.decision === Decision.ALLOW ? "allow" : "deny",
+        }),
+      ),
+    },
+    null,
+    "  ",
+  );
+};
+
 const renderDecision = (decision: Decision | undefined) => {
   switch (decision) {
     case Decision.ALLOW:
@@ -60,6 +89,8 @@ const renderDecision = (decision: Decision | undefined) => {
       return null;
   }
 };
+
+const jsonExtensions = [json(), EditorView.lineWrapping];
 
 function EventDetailPage() {
   const { id: eventId } = useParams();
@@ -96,6 +127,9 @@ function EventDetailPage() {
     getCoreRowModel: getCoreRowModel(),
   });
   const navigate = useNavigate();
+
+  const eventJSON =
+    event.data?.event !== undefined ? renderEvent(event.data.event) : "";
 
   return (
     <Container maxW={"1000px"} pt={6}>
@@ -212,6 +246,14 @@ function EventDetailPage() {
               ))}
             </Tbody>
           </Table>
+        </Stack>
+        <Stack pb={6}>
+          <Heading size="xs">Event Details</Heading>
+          <CodeMirror
+            theme={githubDark}
+            value={eventJSON}
+            extensions={jsonExtensions}
+          />
         </Stack>
       </Stack>
     </Container>

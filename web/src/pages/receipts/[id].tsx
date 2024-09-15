@@ -22,6 +22,22 @@ const fetchReceiptDetail = async (id: string): Promise<ReceiptDetail> => {
   return response.json();
 };
 
+type ReceiptDownloadURL = {
+  url: string;
+};
+
+const fetchReceiptDownloadURL = async (
+  id: string,
+): Promise<ReceiptDownloadURL> => {
+  const response = await fetch(
+    `http://localhost:9090/receipts/${id}/download-url`,
+  );
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  return response.json();
+};
+
 export default function ReceiptDetailPage() {
   const { id } = useParams<{ id: string }>();
   const {
@@ -32,11 +48,16 @@ export default function ReceiptDetailPage() {
     queryKey: ["receipt", id],
     queryFn: () => fetchReceiptDetail(id!),
   });
+  const {
+    data: receiptDownloadURL,
+    isLoading: downloadUrlIsLoading,
+    error: downloadUrlError,
+  } = useQuery<ReceiptDownloadURL, Error>({
+    queryKey: ["receipt", id, "download-url"],
+    queryFn: () => fetchReceiptDownloadURL(id!),
+  });
 
   if (isLoading) return <div>Loading...</div>;
-  if (error)
-    return <div className="p-2">An error has occurred: {error.message}</div>;
-  if (!receiptDetail) return <div>No receipt found</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -53,51 +74,71 @@ export default function ReceiptDetailPage() {
         <div className="space-y-6">
           <Card>
             <CardContent className="p-6">
-              <h1 className="text-2xl font-bold mb-4">
-                {receiptDetail.merchant}
-              </h1>
-              <dl className="grid grid-cols-2 gap-4">
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Date</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {receiptDetail.date}
-                  </dd>
+              {error != null ? (
+                <div className="p-2 text-red-500">
+                  An error has occurred: {error.message}
                 </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Amount</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    ${receiptDetail.amount.toFixed(2)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">
-                    Category
-                  </dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {receiptDetail.category}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm font-medium text-gray-500">Owner</dt>
-                  <dd className="mt-1 text-sm text-gray-900">
-                    {receiptDetail.owner}
-                  </dd>
-                </div>
-              </dl>
+              ) : (
+                <>
+                  <h1 className="text-2xl font-bold mb-4">
+                    {receiptDetail?.merchant}
+                  </h1>
+                  <dl className="grid grid-cols-2 gap-4">
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Date
+                      </dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {receiptDetail?.date}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Amount
+                      </dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        ${receiptDetail?.amount.toFixed(2)}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Category
+                      </dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {receiptDetail?.category}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">
+                        Owner
+                      </dt>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {receiptDetail?.owner}
+                      </dd>
+                    </div>
+                  </dl>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
 
         <Card className="overflow-hidden">
           <CardContent className="p-0 relative aspect-[3/4] md:aspect-auto md:h-[calc(100vh-12rem)]">
-            <img
-              src={
-                receiptDetail.imageUrl ||
-                "/placeholder.svg?height=800&width=600"
-              }
-              alt={`Receipt from ${receiptDetail.merchant}`}
-              className="object-contain w-full h-full"
-            />
+            {downloadUrlError ? (
+              <div className="p-2 text-red-500">
+                An error has occurred: {downloadUrlError.message}
+              </div>
+            ) : (
+              <img
+                src={
+                  receiptDownloadURL?.url ||
+                  "/placeholder.svg?height=800&width=600"
+                }
+                alt={`Receipt from ${receiptDetail?.merchant}`}
+                className="object-contain w-full h-full"
+              />
+            )}
           </CardContent>
         </Card>
       </div>

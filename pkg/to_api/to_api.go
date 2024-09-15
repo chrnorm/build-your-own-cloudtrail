@@ -3,11 +3,13 @@ package to_api
 import (
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/cedar-policy/cedar-go"
 	"github.com/cedar-policy/cedar-go/types"
 	authzv1 "github.com/chrnorm/build-your-own-cloudtrail/gen/authz/v1"
 	"github.com/common-fate/xid"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func DecisionToAPI(dec cedar.Decision) authzv1.Decision {
@@ -40,14 +42,16 @@ type EvaluationInput struct {
 	Diagnostic cedar.Diagnostic
 	Entities   types.Entities
 	PolicySet  *cedar.PolicySet
+	Duration   time.Duration
 }
 
 func Evaluation(input EvaluationInput) (*authzv1.Evaluation, error) {
 	eval := authzv1.Evaluation{
-		Id:          xid.New("eval"),
-		Request:     RequestToAPI(input.Request),
-		Decision:    DecisionToAPI(input.Decision),
-		Diagnostics: &authzv1.Diagnostics{},
+		Id:                 xid.New("eval"),
+		Request:            RequestToAPI(input.Request),
+		Decision:           DecisionToAPI(input.Decision),
+		Diagnostics:        &authzv1.Diagnostics{},
+		EvaluationDuration: durationpb.New(input.Duration),
 	}
 
 	var matchingPolicies []*authzv1.Policy
@@ -76,14 +80,19 @@ func Evaluation(input EvaluationInput) (*authzv1.Evaluation, error) {
 		return nil, err
 	}
 
-	resource := input.Entities[input.Request.Resource]
-	if resource == nil {
-		return nil, errors.New("resource not found")
-	}
+	var resourceJSON string
 
-	resourceJSON, err := json.MarshalIndent(resource, "", "  ")
-	if err != nil {
-		return nil, err
+	if input.Request.Resource.ID != "" {
+		resource := input.Entities[input.Request.Resource]
+		if resource == nil {
+			return nil, errors.New("resource not found")
+		}
+
+		resourceJSONBytes, err := json.MarshalIndent(resource, "", "  ")
+		if err != nil {
+			return nil, err
+		}
+		resourceJSON = string(resourceJSONBytes)
 	}
 
 	eval.DebugInformation = &authzv1.DebugInformation{

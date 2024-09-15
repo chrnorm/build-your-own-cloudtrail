@@ -49,11 +49,13 @@ func (p *PolicyClient) refreshPolicyLoop() {
 		res, err := p.client.GetPolicy(ctx, connect.NewRequest(&authzv1.GetPolicyRequest{}))
 		if err != nil {
 			fmt.Printf("error fetching Cedar policy from authz control plane: %s\n", err.Error())
+			continue
 		}
 
 		ps, err := cedar.NewPolicySetFromBytes("", []byte(res.Msg.CedarPolicyText))
 		if err != nil {
 			fmt.Printf("error parsing Cedar policy from authz control plane: %s\n", err.Error())
+			continue
 		}
 
 		p.mu.Lock()

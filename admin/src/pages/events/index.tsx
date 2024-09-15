@@ -27,7 +27,7 @@ import { Decision, Event } from "../../gen/authz/v1/authz_pb";
 import { formatEID } from "../../eid";
 
 function EventsPage() {
-  const events = useQuery(listEvents);
+  const events = useQuery(listEvents, undefined, { refetchInterval: 1000 });
 
   const columnHelper = createColumnHelper<Event>();
 

@@ -78,21 +78,72 @@ func run() error {
 	r.Get("/receipts", func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
+		start := time.Now()
+
 		entities := storage.Entities()
 
 		receipts := storage.ListReceipts()
 
 		var filtered []receipt.Receipt
+		overallDecision := cedar.Deny
+
+		var allDiags []cedar.Diagnostic
+
+		ps := policyClient.PolicySet()
 
 		for _, receipt := range receipts {
-			decision, _ := policyClient.PolicySet().IsAuthorized(entities, cedar.Request{
+			decision, diag := ps.IsAuthorized(entities, cedar.Request{
 				Principal: types.NewEntityUID(types.EntityType("User"), "alice"),
 				Action:    types.NewEntityUID(types.EntityType("Action"), "GetReceipt"),
 				Resource:  receipt.ToCedar().UID,
 			})
+			allDiags = append(allDiags, diag)
 			if decision == cedar.Allow {
+				overallDecision = cedar.Allow
 				filtered = append(filtered, receipt)
 			}
+		}
+
+		duration := time.Since(start)
+
+		eval, err := to_api.Evaluation(to_api.EvaluationInput{
+			Request: cedar.Request{
+				Principal: types.NewEntityUID(types.EntityType("User"), "alice"),
+				Action:    types.NewEntityUID(types.EntityType("Action"), "GetReceipt"),
+				Resource:  types.NewEntityUID(types.EntityType("Receipt"), ""),
+			},
+			Decision:   overallDecision,
+			Diagnostic: combineDiagnostics(allDiags),
+			Entities:   entities,
+			PolicySet:  ps,
+			Duration:   duration,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = policyClient.LogEvent(ctx, &authzv1.Event{
+			Id: xid.New("event"),
+			Operation: &authzv1.HTTPOperation{
+				Name:   "List Receipts",
+				Method: "GET",
+				Path:   r.URL.Path,
+				Host:   "receiptapp.example.com",
+				Scheme: "https",
+			},
+			Principal: &authzv1.EID{
+				Type: "User",
+				Id:   "alice",
+			},
+			StartTime:        timestamppb.New(start),
+			EndTime:          timestamppb.Now(),
+			Decision:         to_api.DecisionToAPI(overallDecision),
+			AuthzEvaluations: []*authzv1.Evaluation{eval},
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		apio.JSON(ctx, w, filtered, http.StatusOK)
@@ -127,12 +178,15 @@ func run() error {
 		ps := policyClient.PolicySet()
 		decision, diag := ps.IsAuthorized(entities, req)
 
+		duration := time.Since(start)
+
 		eval, err := to_api.Evaluation(to_api.EvaluationInput{
 			Request:    req,
 			Decision:   decision,
 			Diagnostic: diag,
 			Entities:   entities,
 			PolicySet:  ps,
+			Duration:   duration,
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -145,8 +199,8 @@ func run() error {
 				Name:   "Describe Receipt",
 				Method: "GET",
 				Path:   r.URL.Path,
-				Host:   r.Host,
-				Scheme: "http",
+				Host:   "receiptapp.example.com",
+				Scheme: "https",
 			},
 			Principal: &authzv1.EID{
 				Type: "User",
@@ -170,6 +224,88 @@ func run() error {
 		apio.JSON(ctx, w, targetReceipt, http.StatusOK)
 	})
 
+	r.Get("/receipts/{id}/download-url", func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		start := time.Now()
+		id := chi.URLParam(r, "id")
+
+		entities := storage.Entities()
+		receipts := storage.ListReceipts()
+
+		var targetReceipt *receipt.Receipt
+		for _, rcpt := range receipts {
+			if rcpt.ID == id {
+				targetReceipt = &rcpt
+				break
+			}
+		}
+
+		if targetReceipt == nil {
+			http.Error(w, "Receipt image not found or you are not authorized", http.StatusNotFound)
+			return
+		}
+
+		req := cedar.Request{
+			Principal: types.NewEntityUID(types.EntityType("User"), "alice"),
+			Action:    types.NewEntityUID(types.EntityType("S3::Action"), "GetObject"),
+			Resource:  targetReceipt.ToCedar().UID,
+		}
+
+		ps := policyClient.PolicySet()
+		decision, diag := ps.IsAuthorized(entities, req)
+
+		duration := time.Since(start)
+
+		eval, err := to_api.Evaluation(to_api.EvaluationInput{
+			Request:    req,
+			Decision:   decision,
+			Diagnostic: diag,
+			Entities:   entities,
+			PolicySet:  ps,
+			Duration:   duration,
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = policyClient.LogEvent(ctx, &authzv1.Event{
+			Id: xid.New("event"),
+			Operation: &authzv1.HTTPOperation{
+				Name:   "Get Receipt Download URL",
+				Method: "GET",
+				Path:   r.URL.Path,
+				Host:   "receiptapp.example.com",
+				Scheme: "https",
+			},
+			Principal: &authzv1.EID{
+				Type: "User",
+				Id:   "alice",
+			},
+			StartTime:        timestamppb.New(start),
+			EndTime:          timestamppb.Now(),
+			Decision:         to_api.DecisionToAPI(decision),
+			AuthzEvaluations: []*authzv1.Evaluation{eval},
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if decision != cedar.Allow {
+			http.Error(w, "Receipt not found or you are not authorized", http.StatusNotFound)
+			return
+		}
+
+		// Download URL points to the frontend React app public directory, just for this example.
+		// In production this would be an S3 presigned URL.
+		u := downloadURL{
+			URL: fmt.Sprintf("http://localhost:5173/receipts/%s.png", targetReceipt.ID),
+		}
+
+		apio.JSON(ctx, w, u, http.StatusOK)
+	})
+
 	addr := ":9090"
 	srv := http.Server{
 		Handler: r,
@@ -179,4 +315,34 @@ func run() error {
 	fmt.Printf("listening on %s...\n", addr)
 
 	return srv.ListenAndServe()
+}
+
+type downloadURL struct {
+	URL string `json:"url"`
+}
+
+func combineDiagnostics(diags []cedar.Diagnostic) cedar.Diagnostic {
+	reasons := map[cedar.Reason]bool{}
+	errors := map[cedar.Error]bool{}
+
+	for _, d := range diags {
+		for _, r := range d.Reasons {
+			reasons[r] = true
+		}
+		for _, e := range d.Errors {
+			errors[e] = true
+		}
+	}
+
+	var combinedDiag cedar.Diagnostic
+	for r := range reasons {
+		combinedDiag.Reasons = append(combinedDiag.Reasons, r)
+
+		fmt.Printf("reason %s\n", r.PolicyID)
+	}
+	for e := range errors {
+		combinedDiag.Errors = append(combinedDiag.Errors, e)
+	}
+
+	return combinedDiag
 }

@@ -66,7 +66,19 @@ func run() error {
 		},
 	}))
 
-	policyStorage, err := policy.NewInMemoryStorage(`permit (principal, action, resource);`)
+	policyStorage, err := policy.NewInMemoryStorage(`permit(
+	principal,
+	action == Action::"GetReceipt",
+	resource
+) when {
+	principal == resource.owner
+};
+
+permit(
+	principal,
+	action == S3::Action::"GetObject",
+	resource
+);`)
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
 service AuthzService {
+    rpc RunTests(RunTestsRequest) returns (RunTestsResponse) {}
     rpc GetPolicy(GetPolicyRequest) returns (GetPolicyResponse) {}
     rpc UpdatePolicy(UpdatePolicyRequest) returns (UpdatePolicyResponse) {}
     rpc PreviewAuthorization(PreviewAuthorizationRequest) returns (PreviewAuthorizationResponse) {}
@@ -19,6 +20,12 @@ service AuthzService {
     rpc ListReceipts(ListReceiptsRequest) returns (ListReceiptsResponse) {}
     rpc ListS3Objects(ListS3ObjectsRequest) returns (ListS3ObjectsResponse) {}
     rpc LogEvent(LogEventRequest) returns (LogEventResponse) {}
+}
+
+message RunTestsRequest {}
+
+message RunTestsResponse {
+    repeated Test test_results = 1;
 }
 
 message LogEventRequest {
@@ -95,10 +102,11 @@ message Event {
 
 message HTTPOperation {
     string name = 1;
-    string method = 2;
-    string path = 3;
-    string host = 4;
-    string scheme = 5;
+    string id = 2;
+    string method = 3;
+    string path = 4;
+    string host = 5;
+    string scheme = 6;
 }
 
 message ListUsersRequest {}

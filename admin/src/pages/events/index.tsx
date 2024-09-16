@@ -96,7 +96,7 @@ function EventsPage() {
   const navigate = useNavigate();
 
   return (
-    <Container maxW={"1000px"} pt={6}>
+    <Container maxW={"1600px"} pt={6}>
       <Breadcrumb mb={6}>
         <BreadcrumbItem>
           <BreadcrumbLink as={ReactRouterLink} to="/events">
@@ -131,8 +131,19 @@ function EventsPage() {
               <Tr
                 borderBottomWidth={"1px"}
                 key={row.id}
+                backgroundColor={
+                  row.original.decision === Decision.DENY
+                    ? "#ff000016"
+                    : undefined
+                }
                 onClick={() => navigate(`/events/${row.original.id}`)}
-                _hover={{ bg: "gray.800", cursor: "pointer" }}
+                _hover={{
+                  background:
+                    row.original.decision === Decision.DENY
+                      ? "#ff00008"
+                      : "gray.800",
+                  cursor: "pointer",
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <Td key={cell.id} fontSize={"13px"}>

@@ -102,11 +102,33 @@ import { useMutation, useQuery } from "@connectrpc/connect-query";
 import {
   getPolicy,
   previewPolicy,
+  runTests,
   updatePolicy,
 } from "../gen/authz/v1/authz-AuthzService_connectquery";
-import { Decision } from "../gen/authz/v1/authz_pb";
+import { Decision, Test } from "../gen/authz/v1/authz_pb";
 import { ConnectError } from "@connectrpc/connect";
 import { AccessPreview } from "../components/AccessPreview";
+
+const convertTestResult = (t: Test): AccessTest => ({
+  name: t.name,
+  pass: t.pass,
+  request: {
+    action: {
+      id: t.request!.action!.id,
+      type: t.request!.action!.type,
+    },
+    principal: {
+      id: t.request!.principal!.id,
+      type: t.request!.principal!.type,
+    },
+    resource: {
+      id: t.request!.resource!.id,
+      type: t.request!.resource!.type,
+    },
+  },
+  got: t.got === Decision.ALLOW ? "allow" : "deny",
+  want: t.want === Decision.ALLOW ? "allow" : "deny",
+});
 
 function PoliciesPage() {
   const previewPolicyMutation = useMutation(previewPolicy);
@@ -115,10 +137,18 @@ function PoliciesPage() {
   const [errorText, setErrorText] = useState<string>();
   const [tests, setTests] = useState<AccessTest[]>([]);
 
+  const runTestsQuery = useQuery(runTests);
+
   const getPolicyQuery = useQuery(getPolicy, {});
   const updatePolicyMutation = useMutation(updatePolicy);
 
   const [value, setValue] = React.useState("");
+
+  useEffect(() => {
+    if (tests.length === 0 && runTestsQuery.data?.testResults !== undefined) {
+      setTests(runTestsQuery.data.testResults.map(convertTestResult));
+    }
+  }, [runTestsQuery.data, tests]);
 
   useEffect(() => {
     if (getPolicyQuery.data !== undefined && value === "") {
@@ -222,26 +252,8 @@ function PoliciesPage() {
 
         setChanges(newChanges);
 
-        const newTests: AccessTest[] = result.testResults.map((t) => ({
-          name: t.name,
-          pass: t.pass,
-          request: {
-            action: {
-              id: t.request!.action!.id,
-              type: t.request!.action!.type,
-            },
-            principal: {
-              id: t.request!.principal!.id,
-              type: t.request!.principal!.type,
-            },
-            resource: {
-              id: t.request!.resource!.id,
-              type: t.request!.resource!.type,
-            },
-          },
-          got: t.got === Decision.ALLOW ? "allow" : "deny",
-          want: t.want === Decision.ALLOW ? "allow" : "deny",
-        }));
+        const newTests: AccessTest[] =
+          result.testResults.map(convertTestResult);
         setTests(newTests);
       } catch (e: unknown) {
         if (e instanceof ConnectError) {

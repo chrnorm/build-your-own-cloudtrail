@@ -33,6 +33,142 @@ proto3.util.setEnumType(Decision, "authz.v1.Decision", [
 ]);
 
 /**
+ * @generated from message authz.v1.RunTestsRequest
+ */
+export class RunTestsRequest extends Message<RunTestsRequest> {
+  constructor(data?: PartialMessage<RunTestsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.RunTestsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): RunTestsRequest {
+    return new RunTestsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): RunTestsRequest {
+    return new RunTestsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): RunTestsRequest {
+    return new RunTestsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: RunTestsRequest | PlainMessage<RunTestsRequest> | undefined, b: RunTestsRequest | PlainMessage<RunTestsRequest> | undefined): boolean {
+    return proto3.util.equals(RunTestsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.RunTestsResponse
+ */
+export class RunTestsResponse extends Message<RunTestsResponse> {
+  /**
+   * @generated from field: repeated authz.v1.Test test_results = 1;
+   */
+  testResults: Test[] = [];
+
+  constructor(data?: PartialMessage<RunTestsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.RunTestsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "test_results", kind: "message", T: Test, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): RunTestsResponse {
+    return new RunTestsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): RunTestsResponse {
+    return new RunTestsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): RunTestsResponse {
+    return new RunTestsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: RunTestsResponse | PlainMessage<RunTestsResponse> | undefined, b: RunTestsResponse | PlainMessage<RunTestsResponse> | undefined): boolean {
+    return proto3.util.equals(RunTestsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.LogEventRequest
+ */
+export class LogEventRequest extends Message<LogEventRequest> {
+  /**
+   * @generated from field: authz.v1.Event event = 1;
+   */
+  event?: Event;
+
+  constructor(data?: PartialMessage<LogEventRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.LogEventRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "event", kind: "message", T: Event },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): LogEventRequest {
+    return new LogEventRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): LogEventRequest {
+    return new LogEventRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): LogEventRequest {
+    return new LogEventRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: LogEventRequest | PlainMessage<LogEventRequest> | undefined, b: LogEventRequest | PlainMessage<LogEventRequest> | undefined): boolean {
+    return proto3.util.equals(LogEventRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message authz.v1.LogEventResponse
+ */
+export class LogEventResponse extends Message<LogEventResponse> {
+  constructor(data?: PartialMessage<LogEventResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "authz.v1.LogEventResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): LogEventResponse {
+    return new LogEventResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): LogEventResponse {
+    return new LogEventResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): LogEventResponse {
+    return new LogEventResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: LogEventResponse | PlainMessage<LogEventResponse> | undefined, b: LogEventResponse | PlainMessage<LogEventResponse> | undefined): boolean {
+    return proto3.util.equals(LogEventResponse, a, b);
+  }
+}
+
+/**
  * @generated from message authz.v1.GetPolicyRequest
  */
 export class GetPolicyRequest extends Message<GetPolicyRequest> {
@@ -630,22 +766,27 @@ export class HTTPOperation extends Message<HTTPOperation> {
   name = "";
 
   /**
-   * @generated from field: string method = 2;
+   * @generated from field: string id = 2;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string method = 3;
    */
   method = "";
 
   /**
-   * @generated from field: string path = 3;
+   * @generated from field: string path = 4;
    */
   path = "";
 
   /**
-   * @generated from field: string host = 4;
+   * @generated from field: string host = 5;
    */
   host = "";
 
   /**
-   * @generated from field: string scheme = 5;
+   * @generated from field: string scheme = 6;
    */
   scheme = "";
 
@@ -658,10 +799,11 @@ export class HTTPOperation extends Message<HTTPOperation> {
   static readonly typeName = "authz.v1.HTTPOperation";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "method", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "host", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 5, name: "scheme", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "method", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "path", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "host", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "scheme", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): HTTPOperation {

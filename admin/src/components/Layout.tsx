@@ -38,6 +38,17 @@ export const Layout: React.FC = () => {
             </Link>
             <Link
               as={NavLink}
+              to="/resources"
+              color="white"
+              fontWeight="medium"
+              _activeLink={{
+                fontWeight: "bold",
+              }}
+            >
+              Resources
+            </Link>
+            <Link
+              as={NavLink}
               to="/access"
               color="white"
               _activeLink={{
@@ -55,18 +66,6 @@ export const Layout: React.FC = () => {
               }}
             >
               Policies
-            </Link>
-
-            <Link
-              as={NavLink}
-              to="/resources"
-              color="white"
-              fontWeight="medium"
-              _activeLink={{
-                fontWeight: "bold",
-              }}
-            >
-              Resources
             </Link>
           </HStack>
         </HStack>

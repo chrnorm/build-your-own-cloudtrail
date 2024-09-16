@@ -33,6 +33,8 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// AuthzServiceRunTestsProcedure is the fully-qualified name of the AuthzService's RunTests RPC.
+	AuthzServiceRunTestsProcedure = "/authz.v1.AuthzService/RunTests"
 	// AuthzServiceGetPolicyProcedure is the fully-qualified name of the AuthzService's GetPolicy RPC.
 	AuthzServiceGetPolicyProcedure = "/authz.v1.AuthzService/GetPolicy"
 	// AuthzServiceUpdatePolicyProcedure is the fully-qualified name of the AuthzService's UpdatePolicy
@@ -68,6 +70,7 @@ const (
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
 	authzServiceServiceDescriptor                          = v1.File_authz_v1_authz_proto.Services().ByName("AuthzService")
+	authzServiceRunTestsMethodDescriptor                   = authzServiceServiceDescriptor.Methods().ByName("RunTests")
 	authzServiceGetPolicyMethodDescriptor                  = authzServiceServiceDescriptor.Methods().ByName("GetPolicy")
 	authzServiceUpdatePolicyMethodDescriptor               = authzServiceServiceDescriptor.Methods().ByName("UpdatePolicy")
 	authzServicePreviewAuthorizationMethodDescriptor       = authzServiceServiceDescriptor.Methods().ByName("PreviewAuthorization")
@@ -84,6 +87,7 @@ var (
 
 // AuthzServiceClient is a client for the authz.v1.AuthzService service.
 type AuthzServiceClient interface {
+	RunTests(context.Context, *connect.Request[v1.RunTestsRequest]) (*connect.Response[v1.RunTestsResponse], error)
 	GetPolicy(context.Context, *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error)
 	UpdatePolicy(context.Context, *connect.Request[v1.UpdatePolicyRequest]) (*connect.Response[v1.UpdatePolicyResponse], error)
 	PreviewAuthorization(context.Context, *connect.Request[v1.PreviewAuthorizationRequest]) (*connect.Response[v1.PreviewAuthorizationResponse], error)
@@ -108,6 +112,12 @@ type AuthzServiceClient interface {
 func NewAuthzServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AuthzServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &authzServiceClient{
+		runTests: connect.NewClient[v1.RunTestsRequest, v1.RunTestsResponse](
+			httpClient,
+			baseURL+AuthzServiceRunTestsProcedure,
+			connect.WithSchema(authzServiceRunTestsMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 		getPolicy: connect.NewClient[v1.GetPolicyRequest, v1.GetPolicyResponse](
 			httpClient,
 			baseURL+AuthzServiceGetPolicyProcedure,
@@ -185,6 +195,7 @@ func NewAuthzServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 
 // authzServiceClient implements AuthzServiceClient.
 type authzServiceClient struct {
+	runTests                   *connect.Client[v1.RunTestsRequest, v1.RunTestsResponse]
 	getPolicy                  *connect.Client[v1.GetPolicyRequest, v1.GetPolicyResponse]
 	updatePolicy               *connect.Client[v1.UpdatePolicyRequest, v1.UpdatePolicyResponse]
 	previewAuthorization       *connect.Client[v1.PreviewAuthorizationRequest, v1.PreviewAuthorizationResponse]
@@ -197,6 +208,11 @@ type authzServiceClient struct {
 	listReceipts               *connect.Client[v1.ListReceiptsRequest, v1.ListReceiptsResponse]
 	listS3Objects              *connect.Client[v1.ListS3ObjectsRequest, v1.ListS3ObjectsResponse]
 	logEvent                   *connect.Client[v1.LogEventRequest, v1.LogEventResponse]
+}
+
+// RunTests calls authz.v1.AuthzService.RunTests.
+func (c *authzServiceClient) RunTests(ctx context.Context, req *connect.Request[v1.RunTestsRequest]) (*connect.Response[v1.RunTestsResponse], error) {
+	return c.runTests.CallUnary(ctx, req)
 }
 
 // GetPolicy calls authz.v1.AuthzService.GetPolicy.
@@ -261,6 +277,7 @@ func (c *authzServiceClient) LogEvent(ctx context.Context, req *connect.Request[
 
 // AuthzServiceHandler is an implementation of the authz.v1.AuthzService service.
 type AuthzServiceHandler interface {
+	RunTests(context.Context, *connect.Request[v1.RunTestsRequest]) (*connect.Response[v1.RunTestsResponse], error)
 	GetPolicy(context.Context, *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error)
 	UpdatePolicy(context.Context, *connect.Request[v1.UpdatePolicyRequest]) (*connect.Response[v1.UpdatePolicyResponse], error)
 	PreviewAuthorization(context.Context, *connect.Request[v1.PreviewAuthorizationRequest]) (*connect.Response[v1.PreviewAuthorizationResponse], error)
@@ -281,6 +298,12 @@ type AuthzServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	authzServiceRunTestsHandler := connect.NewUnaryHandler(
+		AuthzServiceRunTestsProcedure,
+		svc.RunTests,
+		connect.WithSchema(authzServiceRunTestsMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	authzServiceGetPolicyHandler := connect.NewUnaryHandler(
 		AuthzServiceGetPolicyProcedure,
 		svc.GetPolicy,
@@ -355,6 +378,8 @@ func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOpti
 	)
 	return "/authz.v1.AuthzService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case AuthzServiceRunTestsProcedure:
+			authzServiceRunTestsHandler.ServeHTTP(w, r)
 		case AuthzServiceGetPolicyProcedure:
 			authzServiceGetPolicyHandler.ServeHTTP(w, r)
 		case AuthzServiceUpdatePolicyProcedure:
@@ -387,6 +412,10 @@ func NewAuthzServiceHandler(svc AuthzServiceHandler, opts ...connect.HandlerOpti
 
 // UnimplementedAuthzServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedAuthzServiceHandler struct{}
+
+func (UnimplementedAuthzServiceHandler) RunTests(context.Context, *connect.Request[v1.RunTestsRequest]) (*connect.Response[v1.RunTestsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.RunTests is not implemented"))
+}
 
 func (UnimplementedAuthzServiceHandler) GetPolicy(context.Context, *connect.Request[v1.GetPolicyRequest]) (*connect.Response[v1.GetPolicyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("authz.v1.AuthzService.GetPolicy is not implemented"))

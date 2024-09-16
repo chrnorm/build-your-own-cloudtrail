@@ -127,6 +127,7 @@ func run() error {
 			Id: xid.New("event"),
 			Operation: &authzv1.HTTPOperation{
 				Name:   "List Receipts",
+				Id:     "receipt.list",
 				Method: "GET",
 				Path:   r.URL.Path,
 				Host:   "receiptapp.example.com",
@@ -197,6 +198,7 @@ func run() error {
 			Id: xid.New("event"),
 			Operation: &authzv1.HTTPOperation{
 				Name:   "Describe Receipt",
+				Id:     "receipt.describe",
 				Method: "GET",
 				Path:   r.URL.Path,
 				Host:   "receiptapp.example.com",
@@ -273,6 +275,7 @@ func run() error {
 			Id: xid.New("event"),
 			Operation: &authzv1.HTTPOperation{
 				Name:   "Get Receipt Download URL",
+				Id:     "receipt.get_download_url",
 				Method: "GET",
 				Path:   r.URL.Path,
 				Host:   "receiptapp.example.com",

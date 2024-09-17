@@ -1,0 +1,34 @@
+
+
+entity User = {};
+
+entity Receipt = {
+  "owner": User,
+  "category": String,
+};
+
+action "GetReceipt" appliesTo {
+  principal: User, 
+  resource: Receipt, 
+  context: {
+      "authenticated": Bool,
+  }
+};
+
+namespace S3 {
+  entity Object = {
+    "owner": User,
+  };
+
+  action "GetObject" appliesTo {
+    principal: User, 
+    resource: Object, 
+    context: {
+        "authenticated": Bool,
+    }
+  };
+}
+
+
+
+
